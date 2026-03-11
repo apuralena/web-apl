@@ -1,0 +1,84 @@
+---
+import { ClientRouter } from "astro:transitions";
+import Footer from "../components/Footer";
+import Header from "../components/Header.astro";
+import WhatsAppButton from "../components/WhatsAppButton.astro";
+import { StickyBanner } from "@/components/ui/sticky-banner";
+import { AuroraBackground } from "../components/ui/aurora-background";
+import { Toaster } from "sonner";
+import { sanityClient } from "sanity:client";
+import "../styles/global.css";
+interface LayoutProps {
+  title: string;
+}
+const { title }: LayoutProps = Astro.props;
+
+const resenas =
+  (await sanityClient.fetch(`*[_type == "resena"] | order(_createdAt desc) [0...6]{
+  autor,
+  texto,
+  estrellas,
+  fecha
+}`)) || [];
+---
+
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <link rel='preconnect' href='https://fonts.googleapis.com' />
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+    <link
+      href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap'
+      rel='stylesheet'
+    />
+    <meta name='generator' content={Astro.generator} />
+    <title>{title}</title>
+    <ClientRouter />
+  </head>
+  <body>
+    <div class='aurora-wrapper' transition:persist='aurora-bg'>
+      <AuroraBackground client:load />
+    </div>
+    <div class='content-wrapper'>
+      <Header />
+      <slot />
+      <Footer resenas={resenas} client:visible />
+    </div>
+    <Toaster client:load richColors position='top-right' />
+    <WhatsAppButton />
+  </body>
+</html>
+
+<style>
+  html {
+    background-color: var(--background);
+    margin: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: transparent;
+    margin: 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .aurora-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .content-wrapper {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+  }
+</style>

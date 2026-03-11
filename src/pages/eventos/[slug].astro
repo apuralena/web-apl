@@ -1,0 +1,161 @@
+---
+import { sanityClient } from "sanity:client";
+import Layout from "../../layouts/Layout.astro";
+import Section from "../../components/Section.astro";
+export const prerender = true;
+export async function getStaticPaths() {
+  const eventos = await sanityClient.fetch(`*[_type == "eventos"]{
+    nombreEvento,
+    emojiPreVista,
+    subtituloEvento,
+    descripcionEvento,
+    "fotoEventoUrl": fotoEvento.asset->url,
+    incluyeEvento,
+    incluyeEventoArray,
+    textoCTA
+  }`);
+
+  return eventos.map((evento) => {
+    const slug = evento.nombreEvento
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    return {
+      params: { slug },
+      props: { evento },
+    };
+  });
+}
+
+const { evento } = Astro.props;
+const slug = Astro.params.slug;
+---
+
+<Layout title={`Eventos - ${evento.nombreEvento}`}>
+  <Section narrow>
+    <!-- Breadcrumb -->
+    <a
+      href='/#eventos'
+      class='inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-orange-500 transition-colors mb-10'
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='14'
+        height='14'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+        ><path d='m12 19-7-7 7-7'></path><path d='M19 12H5'></path></svg
+      >
+      Volver a eventos
+    </a>
+
+    <!-- Header -->
+    <div class='mb-12 space-y-4'>
+      <span class='text-6xl' transition:name={`evento-emoji-${slug}`}>
+        {evento.emojiPreVista}
+      </span>
+      <h1
+        class='text-4xl md:text-5xl font-bold tracking-tight text-white'
+        transition:name={`evento-nombre-${slug}`}
+      >
+        {evento.nombreEvento}
+      </h1>
+      <p
+        class='text-xl text-white/40 font-light'
+        transition:name={`evento-subtitulo-${slug}`}
+      >
+        {evento.subtituloEvento}
+      </p>
+    </div>
+
+    <!-- Imagen -->
+    {
+      evento.fotoEventoUrl && (
+        <div class='mb-12 rounded-xl overflow-hidden border border-white/10'>
+          <img
+            src={evento.fotoEventoUrl}
+            alt={evento.nombreEvento}
+            class='w-full h-80 md:h-96 object-cover'
+          />
+        </div>
+      )
+    }
+
+    <!-- Descripción -->
+    <div class='mb-12'>
+      <h2
+        class='text-sm font-semibold tracking-widest uppercase text-orange-500 mb-4'
+      >
+        Sobre el evento
+      </h2>
+      <p class='text-white/50 leading-relaxed whitespace-pre-line'>
+        {evento.descripcionEvento}
+      </p>
+    </div>
+
+    <!-- Qué incluye -->
+    {
+      evento.incluyeEvento && (
+        <div class='mb-12 rounded-xl border border-white/10 bg-white/3 p-6 md:p-8'>
+          <h2 class='text-sm font-semibold tracking-widest uppercase text-orange-500 mb-4'>
+            ¿Qué incluye?
+          </h2>
+          <p class='text-white/50 mb-6'>{evento.incluyeEvento}</p>
+
+          {evento.incluyeEventoArray &&
+            evento.incluyeEventoArray.length > 0 && (
+              <ul class='space-y-3'>
+                {evento.incluyeEventoArray.map((item) => (
+                  <li class='flex items-center gap-3 text-white/60'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      width='16'
+                      height='16'
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
+                      stroke-width='2'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      class='text-orange-500 shrink-0'
+                    >
+                      <path d='M20 6 9 17l-5-5' />
+                    </svg>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
+      )
+    }
+
+    <!-- CTA -->
+    <div class='flex flex-col sm:flex-row gap-4'>
+      <a
+        href='/#presupuesto'
+        rel='noopener noreferrer'
+        class='group inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300'
+      >
+        {evento.textoCTA || "Consultanos para tu evento"}
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          width='18'
+          height='18'
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='currentColor'
+          stroke-width='2'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          class='transition-transform group-hover:translate-x-1'
+          ><path d='M5 12h14'></path><path d='m12 5 7 7-7 7'></path></svg
+        >
+      </a>
+    </div>
+  </Section>
+</Layout>

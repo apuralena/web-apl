@@ -1,0 +1,21 @@
+---
+export const prerender = true;
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import Eventos from "../components/sections/Eventos.astro";
+import Propuestas from "../components/sections/Propuestas.astro";
+import Experiencias from "../components/sections/Experiencias.astro";
+import Nosotros from "../components/sections/Nosotros.astro";
+import Contacto from "../components/sections/Contacto.astro";
+import Presupuesto from "../components/sections/Presupuesto.astro";
+---
+
+<Layout title='A Pura Leña'>
+  <Hero />
+  <Eventos />
+  <Propuestas />
+  <Experiencias />
+  <Nosotros />
+  <Contacto />
+  <Presupuesto />
+</Layout>
