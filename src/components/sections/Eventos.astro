@@ -1,0 +1,46 @@
+---
+import Section from "../Section.astro";
+import EventoCard from "../EventoCard.astro";
+import { sanityClient } from "sanity:client";
+
+const eventosRaw = await sanityClient.fetch(`*[_type == "eventos"]{
+  nombreEvento,
+  emojiPreVista,
+  subtituloEvento
+}`);
+
+const eventos = eventosRaw.map((evento) => ({
+  ...evento,
+  slug: evento.nombreEvento
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, ""),
+}));
+---
+
+<Section id='eventos'>
+  <div class='space-y-4 mb-12'>
+    <p class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'>
+      Servicios
+    </p>
+    <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+      Nuestros Eventos
+    </h2>
+    <p class='text-white/40 text-lg leading-relaxed max-w-2xl'>
+      Cada evento es una experiencia única. Elegí el formato que más se adapte a
+      tu celebración.
+    </p>
+  </div>
+  <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+    {
+      eventos.map((evento) => (
+        <EventoCard
+          nombreEvento={evento.nombreEvento}
+          emojiPreVista={evento.emojiPreVista}
+          subtituloEvento={evento.subtituloEvento}
+          slug={evento.slug}
+        />
+      ))
+    }
+  </div>
+</Section>

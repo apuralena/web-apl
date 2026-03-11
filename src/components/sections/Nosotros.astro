@@ -1,0 +1,93 @@
+---
+import Section from "../Section.astro";
+import { sanityClient } from "sanity:client";
+
+const nosotrosData = await sanityClient.fetch(`*[_type == "nosotros"][0]{
+  titulo,
+  subtitulo,
+  descripcion,
+  fotoNosotros {
+    asset-> {
+      url
+    }
+  }
+}`);
+
+const data = nosotrosData || {
+  titulo: "Nosotros",
+  subtitulo: "Cargando contenido...",
+  descripcion: "Descripción de la sección Nosotros.",
+  fotoNosotros: null,
+};
+---
+
+<Section id='nosotros'>
+  <div class='grid md:grid-cols-2 gap-16 items-center'>
+    <div class='space-y-6'>
+      <div class='space-y-4'>
+        <p
+          class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'
+        >
+          Quiénes somos
+        </p>
+        <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+          {data.titulo}
+        </h2>
+      </div>
+      <p class='text-xl text-white/50 font-light'>{data.subtitulo}</p>
+      <p class='text-white/40 leading-relaxed'>{data.descripcion}</p>
+    </div>
+    {
+      data.fotoNosotros && (
+        <div class='rounded-xl overflow-hidden border border-white/10'>
+          <img
+            src={data.fotoNosotros.asset.url}
+            alt={data.titulo}
+            class='w-full h-auto object-cover'
+          />
+        </div>
+      )
+    }
+  </div>
+
+  <!-- Olimpiada de Asadores -->
+  <div class='mt-24 grid md:grid-cols-2 gap-16 items-center'>
+    <div
+      class='order-2 md:order-1 rounded-xl overflow-hidden border border-white/10'
+    >
+      <img
+        src='/olimpiada.jpg'
+        alt='Olimpiada de Asadores'
+        class='w-full h-auto object-cover'
+      />
+    </div>
+    <div class='order-1 md:order-2 space-y-6'>
+      <div class='space-y-4'>
+        <p
+          class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'
+        >
+          Nuestro Evento
+        </p>
+        <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+          Olimpiada de Asadores
+        </h2>
+      </div>
+      <p class='text-xl text-white/50 font-light'>
+        La competencia que celebra la tradición del asado argentino.
+      </p>
+      <p class='text-white/40 leading-relaxed'>
+        Organizamos la Olimpiada de Asadores, un evento único donde los mejores
+        asadores compiten demostrando su técnica, pasión y dedicación al arte
+        del fuego. Una experiencia que reúne a amantes del asado en un ambiente
+        de camaradería y excelencia gastronómica.
+      </p>
+      <a
+        href='https://olimpiadadeasadores2025.vercel.app/'
+        target='_blank'
+        class='inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300'
+      >
+        Más información
+      </a>
+    </div>
+  </div>
+</Section>

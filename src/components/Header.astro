@@ -1,0 +1,16 @@
+---
+import ButtonNav from "./ButtonNav.astro";
+import Nav from "./Nav.astro";
+import HamburgerMenu from "./HamburgerMenu";
+import Logo from "./Logo.astro";
+---
+
+<header
+  class='text-white sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/5'
+>
+  <div class='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
+    <Logo />
+    <Nav />
+    <HamburgerMenu client:load />
+  </div>
+</header>

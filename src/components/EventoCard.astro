@@ -1,0 +1,59 @@
+---
+interface Props {
+  nombreEvento: string;
+  emojiPreVista: string;
+  subtituloEvento: string;
+  slug: string;
+}
+
+const { nombreEvento, emojiPreVista, subtituloEvento, slug } = Astro.props;
+---
+
+<a
+  href={`/eventos/${slug}`}
+  class='group flex flex-col rounded-xl border border-white/10 bg-white/3 backdrop-blur-sm overflow-hidden hover:border-orange-500/30 hover:bg-white/6 transition-all duration-300'
+>
+  <div
+    class='h-36 w-full flex items-center justify-center bg-linear-to-br from-orange-500/10 to-transparent'
+  >
+    <span
+      class='text-6xl transition-transform duration-300 group-hover:scale-110'
+      transition:name={`evento-emoji-${slug}`}
+    >
+      {emojiPreVista}
+    </span>
+  </div>
+
+  <div class='p-6 flex flex-col grow'>
+    <h3
+      class='text-lg font-semibold text-white mb-1'
+      transition:name={`evento-nombre-${slug}`}
+    >
+      {nombreEvento}
+    </h3>
+    <p
+      class='text-sm text-white/40 mb-6 leading-relaxed'
+      transition:name={`evento-subtitulo-${slug}`}
+    >
+      {subtituloEvento}
+    </p>
+    <span
+      class='mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-orange-500 group-hover:text-orange-400 transition-colors'
+    >
+      Ver detalles
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='14'
+        height='14'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+        class='transition-transform group-hover:translate-x-1'
+        ><path d='M5 12h14'></path><path d='m12 5 7 7-7 7'></path></svg
+      >
+    </span>
+  </div>
+</a>

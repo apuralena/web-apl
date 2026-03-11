@@ -1,0 +1,17 @@
+---
+import ButtonNav from "./ButtonNav.astro";
+import { navItems } from "../config/navigation";
+---
+
+<!-- Menú desktop -->
+<nav class='hidden lg:block'>
+  <ul class='flex gap-6 items-center'>
+    {
+      navItems.map((item) => (
+        <li>
+          <ButtonNav href={item.href} text={item.text} />
+        </li>
+      ))
+    }
+  </ul>
+</nav>

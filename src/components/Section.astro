@@ -1,0 +1,29 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+  fullHeight?: boolean;
+  narrow?: boolean;
+}
+
+const {
+  id,
+  class: className = "",
+  fullHeight = false,
+  narrow = false,
+} = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={[
+    "relative w-full flex flex-col text-white",
+    fullHeight ? "min-h-screen" : "py-24 md:py-32",
+    "px-6",
+    className,
+  ]}
+>
+  <div class:list={["mx-auto w-full", narrow ? "max-w-3xl" : "max-w-6xl"]}>
+    <slot />
+  </div>
+</section>

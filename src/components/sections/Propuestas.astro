@@ -1,0 +1,42 @@
+---
+import Section from "../Section.astro";
+import PropuestaCard from "../PropuestaCard.astro";
+import { sanityClient } from "sanity:client";
+
+const propuestas =
+  await sanityClient.fetch(`*[_type == "propuesta"] | order(orden asc) {
+  titulo,
+  descripcion,
+  incluye,
+  orden,
+  "imageUrl": foto.asset->url
+}`);
+---
+
+<Section id='propuestas'>
+  <div class='space-y-4 mb-12'>
+    <p class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'>
+      Menús
+    </p>
+    <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+      Nuestras Propuestas
+    </h2>
+    <p class='text-white/40 text-lg leading-relaxed max-w-2xl'>
+      Elegí la propuesta que mejor se ajuste a tu evento. Todas incluyen
+      servicio completo de catering a leña.
+    </p>
+  </div>
+  <div class='grid grid-cols-1 gap-6'>
+    {
+      propuestas.map((item, i) => (
+        <PropuestaCard
+          titulo={item.titulo}
+          descripcion={item.descripcion}
+          imageUrl={item.imageUrl}
+          incluye={item.incluye}
+          index={i}
+        />
+      ))
+    }
+  </div>
+</Section>
