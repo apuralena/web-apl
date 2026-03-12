@@ -2,33 +2,31 @@
 import { sanityClient } from "sanity:client";
 import Layout from "../../layouts/Layout.astro";
 import Section from "../../components/Section.astro";
-export const prerender = true;
-export async function getStaticPaths() {
-  const eventos = await sanityClient.fetch(`*[_type == "eventos"]{
-    nombreEvento,
-    emojiPreVista,
-    subtituloEvento,
-    descripcionEvento,
-    "fotoEventoUrl": fotoEvento.asset->url,
-    incluyeEvento,
-    incluyeEventoArray,
-    textoCTA
-  }`);
 
-  return eventos.map((evento) => {
-    const slug = evento.nombreEvento
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
-    return {
-      params: { slug },
-      props: { evento },
-    };
-  });
+const { slug } = Astro.params;
+
+const eventos = await sanityClient.fetch(`*[_type == "eventos"]{
+  nombreEvento,
+  emojiPreVista,
+  subtituloEvento,
+  descripcionEvento,
+  "fotoEventoUrl": fotoEvento.asset->url,
+  incluyeEvento,
+  incluyeEventoArray,
+  textoCTA
+}`);
+
+const evento = eventos.find((e) => {
+  const eventSlug = e.nombreEvento
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+  return eventSlug === slug;
+});
+
+if (!evento) {
+  return Astro.redirect("/");
 }
-
-const { evento } = Astro.props;
-const slug = Astro.params.slug;
 ---
 
 <Layout title={`Eventos - ${evento.nombreEvento}`}>

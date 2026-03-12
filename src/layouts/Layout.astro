@@ -8,10 +8,10 @@ import { AuroraBackground } from "../components/ui/aurora-background";
 import { Toaster } from "sonner";
 import { sanityClient } from "sanity:client";
 import "../styles/global.css";
-interface LayoutProps {
+interface Props {
   title: string;
 }
-const { title }: LayoutProps = Astro.props;
+const { title } = Astro.props;
 
 const resenas =
   (await sanityClient.fetch(`*[_type == "resena"] | order(_createdAt desc) [0...6]{

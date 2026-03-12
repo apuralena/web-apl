@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
 
-export const prerender = false;
-
 function formatValue(key: string, value: unknown): string {
   if (Array.isArray(value)) {
     return value.length > 0 ? value.join(", ") : "—";
