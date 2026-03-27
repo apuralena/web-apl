@@ -6,7 +6,8 @@ import { sanityClient } from "sanity:client";
 const eventosRaw = await sanityClient.fetch(`*[_type == "eventos"]{
   nombreEvento,
   emojiPreVista,
-  subtituloEvento
+  subtituloEvento,
+  "imagen": fotoEvento.asset->url
 }`);
 
 const eventos = eventosRaw.map((evento) => ({
@@ -39,6 +40,7 @@ const eventos = eventosRaw.map((evento) => ({
           emojiPreVista={evento.emojiPreVista}
           subtituloEvento={evento.subtituloEvento}
           slug={evento.slug}
+          imagen={evento.imagen}
         />
       ))
     }

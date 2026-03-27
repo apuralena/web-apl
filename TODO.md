@@ -53,3 +53,7 @@ intercalar orientacion de la foto, primero izquierda, luego derecha, luego izqui
 - Agregar una sección de merchandising, con productos relacionados a la marca, como remeras, gorras, delantales, etc. [PENDIENTE]
 
 # EVENTOS: incluir foto. 
+
+
+# PRESUPUESTO
+- Al cambiar de paso sube 
