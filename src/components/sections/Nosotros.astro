@@ -41,7 +41,8 @@ const data = nosotrosData || {
       data.fotoNosotros && (
         <div class='rounded-xl overflow-hidden border border-white/10'>
           <img
-            src={data.fotoNosotros.asset.url}
+            src={`${data.fotoNosotros.asset.url}?w=1200&q=80&auto=format`}
+            loading='lazy'
             alt={data.titulo}
             class='w-full h-auto object-cover'
           />

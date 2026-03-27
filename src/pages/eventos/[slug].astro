@@ -75,8 +75,9 @@ if (!evento) {
       evento.fotoEventoUrl && (
         <div class='mb-12 rounded-xl overflow-hidden border border-white/10'>
           <img
-            src={evento.fotoEventoUrl}
+            src={`${evento.fotoEventoUrl}?w=1200&q=80&auto=format`}
             alt={evento.nombreEvento}
+            loading='lazy'
             class='w-full h-80 md:h-96 object-cover'
           />
         </div>

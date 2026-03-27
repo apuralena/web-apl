@@ -47,3 +47,9 @@ intercalar orientacion de la foto, primero izquierda, luego derecha, luego izqui
 # Footer:
 
 - Calificaciones o reviews de google.
+
+
+# AGREGAR SECCION DE MERCHANDISING:
+- Agregar una sección de merchandising, con productos relacionados a la marca, como remeras, gorras, delantales, etc. [PENDIENTE]
+
+# EVENTOS: incluir foto. 
