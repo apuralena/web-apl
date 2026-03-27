@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm, type UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
+import * as React from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm, type UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import * as z from 'zod'
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Field,
   FieldContent,
@@ -20,313 +20,313 @@ import {
   FieldSeparator,
   FieldSet,
   FieldTitle,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 interface OpcionConfig {
-  valor: string;
-  etiqueta: string;
-  descripcion?: string;
+  valor: string
+  etiqueta: string
+  descripcion?: string
 }
 
 interface CampoConfig {
-  _key: string;
-  clave: string;
-  etiqueta: string;
+  _key: string
+  clave: string
+  etiqueta: string
   tipo:
-    | "text"
-    | "email"
-    | "tel"
-    | "number"
-    | "date"
-    | "time"
-    | "textarea"
-    | "radio"
-    | "checkbox";
-  placeholder?: string;
-  descripcion?: string;
-  obligatorio?: boolean;
-  anchoColumna?: "completo" | "mitad";
-  opciones?: OpcionConfig[];
-  incluyeOpcionOtro?: boolean;
-  origenDinamico?: "ninguno" | "eventos" | "propuestas";
-  opcionFijaFinal?: OpcionConfig;
+    | 'text'
+    | 'email'
+    | 'tel'
+    | 'number'
+    | 'date'
+    | 'time'
+    | 'textarea'
+    | 'radio'
+    | 'checkbox'
+  placeholder?: string
+  descripcion?: string
+  obligatorio?: boolean
+  anchoColumna?: 'completo' | 'mitad'
+  opciones?: OpcionConfig[]
+  incluyeOpcionOtro?: boolean
+  origenDinamico?: 'ninguno' | 'eventos' | 'propuestas'
+  opcionFijaFinal?: OpcionConfig
 }
 
 interface FormConfig {
-  paso1Titulo?: string;
-  paso1Subtitulo?: string;
-  paso2Titulo?: string;
-  paso2Subtitulo?: string;
-  camposPaso1?: CampoConfig[];
-  camposPaso2?: CampoConfig[];
-  textoBotonSiguiente?: string;
-  textoBotonVolver?: string;
-  textoBotonEnviar?: string;
+  paso1Titulo?: string
+  paso1Subtitulo?: string
+  paso2Titulo?: string
+  paso2Subtitulo?: string
+  camposPaso1?: CampoConfig[]
+  camposPaso2?: CampoConfig[]
+  textoBotonSiguiente?: string
+  textoBotonVolver?: string
+  textoBotonEnviar?: string
 }
 
 interface EventoOption {
-  nombreEvento: string;
-  emojiPreVista?: string;
+  nombreEvento: string
+  emojiPreVista?: string
 }
 
 interface PropuestaOption {
-  titulo: string;
-  descripcion?: string;
+  titulo: string
+  descripcion?: string
 }
 
 export interface FormPresupuestoProps {
-  config?: FormConfig | null;
-  eventos?: EventoOption[];
-  propuestas?: PropuestaOption[];
+  config?: FormConfig | null
+  eventos?: EventoOption[]
+  propuestas?: PropuestaOption[]
 }
 
 // ---------------------------------------------------------------------------
 // Default configuration — used when no Sanity document exists yet
 // ---------------------------------------------------------------------------
 const DEFAULT_CONFIG: FormConfig = {
-  paso1Titulo: "Datos del evento",
-  paso2Titulo: "Menú y servicios",
+  paso1Titulo: 'Datos del evento',
+  paso2Titulo: 'Menú y servicios',
   paso2Subtitulo:
-    "Estas respuestas son orientativas: podemos personalizar todo.",
-  textoBotonSiguiente: "Siguiente →",
-  textoBotonVolver: "← Volver",
-  textoBotonEnviar: "Enviar solicitud",
+    'Estas respuestas son orientativas: podemos personalizar todo.',
+  textoBotonSiguiente: 'Siguiente →',
+  textoBotonVolver: '← Volver',
+  textoBotonEnviar: 'Enviar solicitud',
   camposPaso1: [
     {
-      _key: "email",
-      clave: "email",
-      etiqueta: "Correo",
-      tipo: "email",
-      placeholder: "tu@email.com",
-      descripcion: "Usaremos este mail para enviarte el presupuesto.",
+      _key: 'email',
+      clave: 'email',
+      etiqueta: 'Correo',
+      tipo: 'email',
+      placeholder: 'tu@email.com',
+      descripcion: 'Usaremos este mail para enviarte el presupuesto.',
       obligatorio: true,
     },
     {
-      _key: "telefono",
-      clave: "telefono",
-      etiqueta: "Teléfono",
-      tipo: "tel",
-      placeholder: "+54 11 1234-5678",
-      descripcion: "Si preferís que te contactemos por WhatsApp, dejalo acá.",
+      _key: 'telefono',
+      clave: 'telefono',
+      etiqueta: 'Teléfono',
+      tipo: 'tel',
+      placeholder: '+54 11 1234-5678',
+      descripcion: 'Si preferís que te contactemos por WhatsApp, dejalo acá.',
       obligatorio: false,
     },
     {
-      _key: "nombre",
-      clave: "nombre",
-      etiqueta: "¿Cuál es tu nombre?",
-      tipo: "text",
-      placeholder: "Nombre y apellido / o empresa",
+      _key: 'nombre',
+      clave: 'nombre',
+      etiqueta: '¿Cuál es tu nombre?',
+      tipo: 'text',
+      placeholder: 'Nombre y apellido / o empresa',
       obligatorio: true,
     },
     {
-      _key: "tipoEvento",
-      clave: "tipoEvento",
-      etiqueta: "¿Qué tipo de evento es?",
-      tipo: "radio",
+      _key: 'tipoEvento',
+      clave: 'tipoEvento',
+      etiqueta: '¿Qué tipo de evento es?',
+      tipo: 'radio',
       obligatorio: true,
-      origenDinamico: "eventos",
+      origenDinamico: 'eventos',
       incluyeOpcionOtro: true,
     },
     {
-      _key: "fecha",
-      clave: "fecha",
-      etiqueta: "Fecha",
-      tipo: "date",
+      _key: 'fecha',
+      clave: 'fecha',
+      etiqueta: 'Fecha',
+      tipo: 'date',
       obligatorio: true,
-      anchoColumna: "mitad",
+      anchoColumna: 'mitad',
     },
     {
-      _key: "hora",
-      clave: "hora",
-      etiqueta: "Hora",
-      tipo: "time",
+      _key: 'hora',
+      clave: 'hora',
+      etiqueta: 'Hora',
+      tipo: 'time',
       obligatorio: true,
-      anchoColumna: "mitad",
+      anchoColumna: 'mitad',
     },
     {
-      _key: "cantidadPersonas",
-      clave: "cantidadPersonas",
-      etiqueta: "¿Cuántas personas asistirán?",
-      tipo: "number",
-      placeholder: "Ej: 50",
+      _key: 'cantidadPersonas',
+      clave: 'cantidadPersonas',
+      etiqueta: '¿Cuántas personas asistirán?',
+      tipo: 'number',
+      placeholder: 'Ej: 50',
       descripcion:
-        "Recordá: el mínimo de reserva es 25 personas (si son menos, se abona el equivalente a 25).",
+        'Recordá: el mínimo de reserva es 25 personas (si son menos, se abona el equivalente a 25).',
       obligatorio: true,
     },
     {
-      _key: "tandaComida",
-      clave: "tandaComida",
-      etiqueta: "¿El evento requiere más de una tanda de comida?",
-      tipo: "radio",
+      _key: 'tandaComida',
+      clave: 'tandaComida',
+      etiqueta: '¿El evento requiere más de una tanda de comida?',
+      tipo: 'radio',
       obligatorio: true,
       opciones: [
         {
-          valor: "extendido",
-          etiqueta: "Sí, dos o más",
-          descripcion: "Recepción / principal / postre / final de fiesta",
+          valor: 'extendido',
+          etiqueta: 'Sí, dos o más',
+          descripcion: 'Recepción / principal / postre / final de fiesta',
         },
         {
-          valor: "estandar",
-          etiqueta: "No, una sola",
-          descripcion: "Almuerzo o cena",
+          valor: 'estandar',
+          etiqueta: 'No, una sola',
+          descripcion: 'Almuerzo o cena',
         },
       ],
     },
     {
-      _key: "ubicacion",
-      clave: "ubicacion",
-      etiqueta: "¿Dónde será tu evento?",
-      tipo: "text",
-      placeholder: "Dirección exacta o zona",
+      _key: 'ubicacion',
+      clave: 'ubicacion',
+      etiqueta: '¿Dónde será tu evento?',
+      tipo: 'text',
+      placeholder: 'Dirección exacta o zona',
       descripcion:
-        "Dirección exacta; si aún no tenés locación, indicá zona y si necesitás recomendaciones.",
+        'Dirección exacta; si aún no tenés locación, indicá zona y si necesitás recomendaciones.',
       obligatorio: true,
     },
     {
-      _key: "parrilla",
-      clave: "parrilla",
-      etiqueta: "¿Cuentan con parrilla? Aclarar medidas",
-      tipo: "textarea",
-      placeholder: "Medidas, espacio disponible, acceso...",
+      _key: 'parrilla',
+      clave: 'parrilla',
+      etiqueta: '¿Cuentan con parrilla? Aclarar medidas',
+      tipo: 'textarea',
+      placeholder: 'Medidas, espacio disponible, acceso...',
       descripcion:
-        "Si no hay, nos ocupamos nosotros. Indicanos espacio disponible y acceso (terraza, jardín, salón).",
+        'Si no hay, nos ocupamos nosotros. Indicanos espacio disponible y acceso (terraza, jardín, salón).',
       obligatorio: false,
     },
     {
-      _key: "restricciones",
-      clave: "restricciones",
-      etiqueta: "Requerimientos especiales / restricciones alimentarias",
-      tipo: "textarea",
-      placeholder: "Celíacos, vegetarianos, veganos...",
+      _key: 'restricciones',
+      clave: 'restricciones',
+      etiqueta: 'Requerimientos especiales / restricciones alimentarias',
+      tipo: 'textarea',
+      placeholder: 'Celíacos, vegetarianos, veganos...',
       descripcion:
-        "Ej.: celíacos (¿cuántas personas?), vegetarianos, veganos, sin sal, sin azúcar, etc.",
+        'Ej.: celíacos (¿cuántas personas?), vegetarianos, veganos, sin sal, sin azúcar, etc.',
       obligatorio: false,
     },
     {
-      _key: "comentariosLogisticos",
-      clave: "comentariosLogisticos",
-      etiqueta: "Comentarios logísticos (opcional)",
-      tipo: "textarea",
-      placeholder: "Accesos, ascensores, horarios...",
+      _key: 'comentariosLogisticos',
+      clave: 'comentariosLogisticos',
+      etiqueta: 'Comentarios logísticos (opcional)',
+      tipo: 'textarea',
+      placeholder: 'Accesos, ascensores, horarios...',
       descripcion:
-        "Accesos, ascensores, horarios de armado/desarme, enchufes, agua, plan por lluvia, etc.",
+        'Accesos, ascensores, horarios de armado/desarme, enchufes, agua, plan por lluvia, etc.',
       obligatorio: false,
     },
   ],
   camposPaso2: [
     {
-      _key: "recepcion",
-      clave: "recepcion",
-      etiqueta: "Recepción",
-      tipo: "radio",
-      descripcion: "Elegí una opción",
+      _key: 'recepcion',
+      clave: 'recepcion',
+      etiqueta: 'Recepción',
+      tipo: 'radio',
+      descripcion: 'Elegí una opción',
       opciones: [
-        { valor: "tabla-fiambres", etiqueta: "��� Tabla de fiambres caseros" },
+        { valor: 'tabla-fiambres', etiqueta: '��� Tabla de fiambres caseros' },
         {
-          valor: "pinchos",
+          valor: 'pinchos',
           etiqueta:
-            "��� Pinchos bandejeados (matambrito, mollejas, provoletas)",
+            '��� Pinchos bandejeados (matambrito, mollejas, provoletas)',
         },
-        { valor: "sin-recepcion", etiqueta: "No quiero recepción" },
+        { valor: 'sin-recepcion', etiqueta: 'No quiero recepción' },
       ],
     },
     {
-      _key: "platoPrincipal",
-      clave: "platoPrincipal",
-      etiqueta: "Plato principal",
-      tipo: "radio",
-      descripcion: "Elegí tu estilo",
-      origenDinamico: "propuestas",
+      _key: 'platoPrincipal',
+      clave: 'platoPrincipal',
+      etiqueta: 'Plato principal',
+      tipo: 'radio',
+      descripcion: 'Elegí tu estilo',
+      origenDinamico: 'propuestas',
       opcionFijaFinal: {
-        valor: "no-decidido",
-        etiqueta: "No lo tengo decidido",
-        descripcion: "Me gustaría charlarlo con ustedes",
+        valor: 'no-decidido',
+        etiqueta: 'No lo tengo decidido',
+        descripcion: 'Me gustaría charlarlo con ustedes',
       },
     },
     {
-      _key: "adicionales",
-      clave: "adicionales",
-      etiqueta: "Adicionales",
-      tipo: "checkbox",
-      descripcion: "Tildá lo que te interese",
+      _key: 'adicionales',
+      clave: 'adicionales',
+      etiqueta: 'Adicionales',
+      tipo: 'checkbox',
+      descripcion: 'Tildá lo que te interese',
       opciones: [
         {
-          valor: "achuras",
-          etiqueta: "Achuras (chinchulines, mollejas, morcilla)",
+          valor: 'achuras',
+          etiqueta: 'Achuras (chinchulines, mollejas, morcilla)',
         },
-        { valor: "papas-fritas", etiqueta: "Papas fritas" },
-        { valor: "provoleta", etiqueta: "Provoleta parrillera" },
+        { valor: 'papas-fritas', etiqueta: 'Papas fritas' },
+        { valor: 'provoleta', etiqueta: 'Provoleta parrillera' },
         {
-          valor: "vajilla-completa",
+          valor: 'vajilla-completa',
           etiqueta:
-            "Vajilla completa (plato, cubiertos, copa, panera, ensaladera, hielera)",
+            'Vajilla completa (plato, cubiertos, copa, panera, ensaladera, hielera)',
         },
       ],
     },
     {
-      _key: "postres",
-      clave: "postres",
-      etiqueta: "Postres",
-      tipo: "radio",
+      _key: 'postres',
+      clave: 'postres',
+      etiqueta: 'Postres',
+      tipo: 'radio',
       opciones: [
         {
-          valor: "1-opcion",
+          valor: '1-opcion',
           etiqueta:
-            "1 opción a elección (Queso y dulce / Imperial / Paletas heladas / Bombón escocés)",
+            '1 opción a elección (Queso y dulce / Imperial / Paletas heladas / Bombón escocés)',
         },
         {
-          valor: "mesa-dulce",
+          valor: 'mesa-dulce',
           etiqueta:
-            "��� Mesa dulce completa (Lemon pie, Balcarce, Marquise, Tarta de frutilla, Tarta tofi, Torta Oreo, Chocolatosa, Pastafrola)",
+            '��� Mesa dulce completa (Lemon pie, Balcarce, Marquise, Tarta de frutilla, Tarta tofi, Torta Oreo, Chocolatosa, Pastafrola)',
         },
-        { valor: "sin-postres", etiqueta: "No incluir postres" },
+        { valor: 'sin-postres', etiqueta: 'No incluir postres' },
       ],
     },
     {
-      _key: "serviciosAdicionales",
-      clave: "serviciosAdicionales",
-      etiqueta: "Servicios adicionales (opcional)",
-      tipo: "checkbox",
+      _key: 'serviciosAdicionales',
+      clave: 'serviciosAdicionales',
+      etiqueta: 'Servicios adicionales (opcional)',
+      tipo: 'checkbox',
       opciones: [
         {
-          valor: "fogoneros",
-          etiqueta: "Fogoneros / asadores (show de fuegos)",
+          valor: 'fogoneros',
+          etiqueta: 'Fogoneros / asadores (show de fuegos)',
         },
-        { valor: "vajilla", etiqueta: "Vajilla" },
-        { valor: "mesas-trabajo", etiqueta: "Mesas de trabajo" },
-        { valor: "gazebo", etiqueta: "Gazebo" },
-        { valor: "barras-vinos", etiqueta: "Barras y vinos" },
-        { valor: "ambientacion", etiqueta: "Ambientación / mobiliario" },
-        { valor: "locaciones", etiqueta: "Locaciones" },
-        { valor: "artistas", etiqueta: "Artistas" },
+        { valor: 'vajilla', etiqueta: 'Vajilla' },
+        { valor: 'mesas-trabajo', etiqueta: 'Mesas de trabajo' },
+        { valor: 'gazebo', etiqueta: 'Gazebo' },
+        { valor: 'barras-vinos', etiqueta: 'Barras y vinos' },
+        { valor: 'ambientacion', etiqueta: 'Ambientación / mobiliario' },
+        { valor: 'locaciones', etiqueta: 'Locaciones' },
+        { valor: 'artistas', etiqueta: 'Artistas' },
         {
-          valor: "timing",
-          etiqueta: "Armado de timing (horarios y momentos del evento)",
+          valor: 'timing',
+          etiqueta: 'Armado de timing (horarios y momentos del evento)',
         },
-        { valor: "produccion", etiqueta: "Asistencia en la producción" },
+        { valor: 'produccion', etiqueta: 'Asistencia en la producción' },
       ],
     },
     {
-      _key: "presupuestoEstimado",
-      clave: "presupuestoEstimado",
-      etiqueta: "Presupuesto estimado por persona (opcional)",
-      tipo: "radio",
+      _key: 'presupuestoEstimado',
+      clave: 'presupuestoEstimado',
+      etiqueta: 'Presupuesto estimado por persona (opcional)',
+      tipo: 'radio',
       opciones: [
-        { valor: "sin-tope", etiqueta: "Sin tope / Quiero propuesta ideal" },
-        { valor: "hasta-25000", etiqueta: "Hasta $25.000" },
-        { valor: "25001-35000", etiqueta: "$25.001 – $35.000" },
-        { valor: "35001-50000", etiqueta: "$35.001 – $50.000" },
-        { valor: "mas-50000", etiqueta: "+$50.000" },
+        { valor: 'sin-tope', etiqueta: 'Sin tope / Quiero propuesta ideal' },
+        { valor: 'hasta-25000', etiqueta: 'Hasta $25.000' },
+        { valor: '25001-35000', etiqueta: '$25.001 – $35.000' },
+        { valor: '35001-50000', etiqueta: '$35.001 – $50.000' },
+        { valor: 'mas-50000', etiqueta: '+$50.000' },
       ],
     },
   ],
-};
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -334,55 +334,55 @@ const DEFAULT_CONFIG: FormConfig = {
 function slugify(str: string) {
   return str
     .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
 }
 
 function Req() {
-  return <span className='text-orange-500 ml-0.5'>*</span>;
+  return <span className='text-orange-500 ml-0.5'>*</span>
 }
 
 // ---------------------------------------------------------------------------
 // Dynamic Zod schema builder
 // ---------------------------------------------------------------------------
 function buildZodShape(campos: CampoConfig[]) {
-  const shape: Record<string, z.ZodTypeAny> = {};
+  const shape: Record<string, z.ZodTypeAny> = {}
 
   for (const campo of campos) {
-    if (campo.tipo === "checkbox") {
+    if (campo.tipo === 'checkbox') {
       shape[campo.clave] = campo.obligatorio
         ? z.array(z.string()).min(1, `${campo.etiqueta} es obligatorio`)
-        : z.array(z.string()).optional();
-    } else if (campo.tipo === "email") {
+        : z.array(z.string()).optional()
+    } else if (campo.tipo === 'email') {
       shape[campo.clave] = campo.obligatorio
         ? z
             .string()
             .min(1, `${campo.etiqueta} es obligatorio`)
-            .email("Ingresá un correo válido")
-        : z.string().optional();
+            .email('Ingresá un correo válido')
+        : z.string().optional()
     } else {
       shape[campo.clave] = campo.obligatorio
         ? z.string().min(1, `${campo.etiqueta} es obligatorio`)
-        : z.string().optional();
+        : z.string().optional()
     }
 
     if (campo.incluyeOpcionOtro) {
-      shape[`${campo.clave}_otro`] = z.string().optional();
+      shape[`${campo.clave}_otro`] = z.string().optional()
     }
   }
 
-  return shape;
+  return shape
 }
 
 function buildDefaults(campos: CampoConfig[]) {
-  const defaults: Record<string, string | string[]> = {};
+  const defaults: Record<string, string | string[]> = {}
   for (const campo of campos) {
-    defaults[campo.clave] = campo.tipo === "checkbox" ? [] : "";
+    defaults[campo.clave] = campo.tipo === 'checkbox' ? [] : ''
     if (campo.incluyeOpcionOtro) {
-      defaults[`${campo.clave}_otro`] = "";
+      defaults[`${campo.clave}_otro`] = ''
     }
   }
-  return defaults;
+  return defaults
 }
 
 // ---------------------------------------------------------------------------
@@ -393,55 +393,55 @@ function getResolvedOptions(
   eventos: EventoOption[],
   propuestas: PropuestaOption[],
 ): OpcionConfig[] {
-  if (campo.origenDinamico === "eventos") {
+  if (campo.origenDinamico === 'eventos') {
     const opts: OpcionConfig[] = eventos.map((e) => ({
       valor: slugify(e.nombreEvento),
       etiqueta: e.emojiPreVista
         ? `${e.emojiPreVista} ${e.nombreEvento}`
         : e.nombreEvento,
-    }));
-    if (campo.opcionFijaFinal) opts.push(campo.opcionFijaFinal);
-    return opts;
+    }))
+    if (campo.opcionFijaFinal) opts.push(campo.opcionFijaFinal)
+    return opts
   }
 
-  if (campo.origenDinamico === "propuestas") {
+  if (campo.origenDinamico === 'propuestas') {
     const opts: OpcionConfig[] = propuestas.map((p) => ({
       valor: slugify(p.titulo),
       etiqueta: p.titulo,
       descripcion: p.descripcion,
-    }));
-    if (campo.opcionFijaFinal) opts.push(campo.opcionFijaFinal);
-    return opts;
+    }))
+    if (campo.opcionFijaFinal) opts.push(campo.opcionFijaFinal)
+    return opts
   }
 
-  return campo.opciones || [];
+  return campo.opciones || []
 }
 
 // ---------------------------------------------------------------------------
 // Group consecutive half-width fields into rows
 // ---------------------------------------------------------------------------
 function groupFieldsByWidth(campos: CampoConfig[]): CampoConfig[][] {
-  const rows: CampoConfig[][] = [];
-  let halfGroup: CampoConfig[] = [];
+  const rows: CampoConfig[][] = []
+  let halfGroup: CampoConfig[] = []
 
   for (const campo of campos) {
-    if (campo.anchoColumna === "mitad") {
-      halfGroup.push(campo);
+    if (campo.anchoColumna === 'mitad') {
+      halfGroup.push(campo)
       if (halfGroup.length === 2) {
-        rows.push([...halfGroup]);
-        halfGroup = [];
+        rows.push([...halfGroup])
+        halfGroup = []
       }
     } else {
       if (halfGroup.length > 0) {
-        rows.push([...halfGroup]);
-        halfGroup = [];
+        rows.push([...halfGroup])
+        halfGroup = []
       }
-      rows.push([campo]);
+      rows.push([campo])
     }
   }
-  if (halfGroup.length > 0) rows.push(halfGroup);
+  if (halfGroup.length > 0) rows.push(halfGroup)
 
-  return rows;
+  return rows
 }
 
 // ---------------------------------------------------------------------------
@@ -453,16 +453,16 @@ function RenderCampo({
   eventos,
   propuestas,
 }: {
-  campo: CampoConfig;
-  form: UseFormReturn<Record<string, any>>;
-  eventos: EventoOption[];
-  propuestas: PropuestaOption[];
+  campo: CampoConfig
+  form: UseFormReturn<Record<string, any>>
+  eventos: EventoOption[]
+  propuestas: PropuestaOption[]
 }) {
-  const watchedValue = form.watch(campo.clave);
+  const watchedValue = form.watch(campo.clave)
 
   // ── Radio ──
-  if (campo.tipo === "radio") {
-    const options = getResolvedOptions(campo, eventos, propuestas);
+  if (campo.tipo === 'radio') {
+    const options = getResolvedOptions(campo, eventos, propuestas)
     return (
       <Controller
         name={campo.clave}
@@ -513,7 +513,7 @@ function RenderCampo({
               )}
             </RadioGroup>
 
-            {campo.incluyeOpcionOtro && watchedValue === "otro" && (
+            {campo.incluyeOpcionOtro && watchedValue === 'otro' && (
               <Controller
                 name={`${campo.clave}_otro`}
                 control={form.control}
@@ -536,12 +536,12 @@ function RenderCampo({
           </FieldSet>
         )}
       />
-    );
+    )
   }
 
   // ── Checkbox ──
-  if (campo.tipo === "checkbox") {
-    const options = getResolvedOptions(campo, eventos, propuestas);
+  if (campo.tipo === 'checkbox') {
+    const options = getResolvedOptions(campo, eventos, propuestas)
     return (
       <Controller
         name={campo.clave}
@@ -562,11 +562,11 @@ function RenderCampo({
                     name={field.name}
                     checked={field.value?.includes(opt.valor)}
                     onCheckedChange={(checked) => {
-                      const current = field.value || [];
+                      const current = field.value || []
                       const next = checked
                         ? [...current, opt.valor]
-                        : current.filter((v: string) => v !== opt.valor);
-                      field.onChange(next);
+                        : current.filter((v: string) => v !== opt.valor)
+                      field.onChange(next)
                     }}
                   />
                   <FieldContent>
@@ -584,11 +584,11 @@ function RenderCampo({
           </FieldSet>
         )}
       />
-    );
+    )
   }
 
   // ── Textarea ──
-  if (campo.tipo === "textarea") {
+  if (campo.tipo === 'textarea') {
     return (
       <Controller
         name={campo.clave}
@@ -612,7 +612,7 @@ function RenderCampo({
           </Field>
         )}
       />
-    );
+    )
   }
 
   // ── Input: text, email, tel, number, date, time ──
@@ -630,9 +630,9 @@ function RenderCampo({
             type={campo.tipo}
             placeholder={campo.placeholder}
             aria-invalid={fieldState.invalid}
-            {...(campo.tipo === "number" ? { min: 1 } : {})}
-            {...(["date", "time"].includes(campo.tipo)
-              ? { style: { colorScheme: "dark" } }
+            {...(campo.tipo === 'number' ? { min: 1 } : {})}
+            {...(['date', 'time'].includes(campo.tipo)
+              ? { style: { colorScheme: 'dark' } }
               : {})}
             {...field}
           />
@@ -643,7 +643,7 @@ function RenderCampo({
         </Field>
       )}
     />
-  );
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -654,18 +654,18 @@ export function FormPresupuesto({
   eventos = [],
   propuestas = [],
 }: FormPresupuestoProps) {
-  const [step, setStep] = React.useState(1);
+  const [step, setStep] = React.useState(1)
 
   // Merge Sanity config with defaults — always have a working form
   const resolvedConfig = React.useMemo<FormConfig>(() => {
     if (!config || !config.camposPaso1 || config.camposPaso1.length === 0) {
-      return DEFAULT_CONFIG;
+      return DEFAULT_CONFIG
     }
-    return config;
-  }, [config]);
+    return config
+  }, [config])
 
-  const campos1 = resolvedConfig.camposPaso1 ?? [];
-  const campos2 = resolvedConfig.camposPaso2 ?? [];
+  const campos1 = resolvedConfig.camposPaso1 ?? []
+  const campos2 = resolvedConfig.camposPaso2 ?? []
 
   // Stable key for memoization (avoids new array refs triggering useMemo)
   const configKey = React.useMemo(
@@ -674,109 +674,118 @@ export function FormPresupuesto({
         campos1.map((c) => c.clave).concat(campos2.map((c) => c.clave)),
       ),
     [campos1, campos2],
-  );
+  )
 
   // Build dynamic schema, defaults & required keys
   const { schema, defaults, step1Keys } = React.useMemo(() => {
-    const shape1 = buildZodShape(campos1);
-    const shape2 = buildZodShape(campos2);
-    const s = z.object({ ...shape1, ...shape2 });
-    const d = { ...buildDefaults(campos1), ...buildDefaults(campos2) };
-    const keys = campos1.map((c) => c.clave);
-    return { schema: s, defaults: d, step1Keys: keys };
+    const shape1 = buildZodShape(campos1)
+    const shape2 = buildZodShape(campos2)
+    const s = z.object({ ...shape1, ...shape2 })
+    const d = { ...buildDefaults(campos1), ...buildDefaults(campos2) }
+    const keys = campos1.map((c) => c.clave)
+    return { schema: s, defaults: d, step1Keys: keys }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configKey]);
+  }, [configKey])
 
   const form = useForm<Record<string, any>>({
     resolver: zodResolver(schema),
     defaultValues: defaults,
-  });
+  })
 
   // -- Navigation ---------------------------------------------------------
   async function goToStep2() {
-    const valid = await form.trigger(step1Keys);
+    const valid = await form.trigger(step1Keys)
 
-    let otroValid = true;
+    let otroValid = true
     for (const campo of campos1) {
       if (campo.incluyeOpcionOtro && campo.obligatorio) {
-        const val = form.getValues(campo.clave);
-        if (val === "otro") {
-          const otroVal = form.getValues(`${campo.clave}_otro`);
-          if (!otroVal || String(otroVal).trim() === "") {
+        const val = form.getValues(campo.clave)
+        if (val === 'otro') {
+          const otroVal = form.getValues(`${campo.clave}_otro`)
+          if (!otroVal || String(otroVal).trim() === '') {
             form.setError(`${campo.clave}_otro`, {
-              type: "manual",
-              message: "Especificá el valor",
-            });
-            otroValid = false;
+              type: 'manual',
+              message: 'Especificá el valor',
+            })
+            otroValid = false
           }
         }
       }
     }
 
     if (valid && otroValid) {
-      setStep(2);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setStep(2)
     }
   }
 
   function goToStep1() {
-    setStep(1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setStep(1)
   }
 
   // -- Submit -------------------------------------------------------------
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   async function onSubmit(data: Record<string, any>) {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      const res = await fetch("/api/presupuesto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      // Debug: ver todos los keys que vienen
+      console.log('Data keys:', Object.keys(data))
+      console.log('Data:', JSON.stringify(data, null, 2))
+
+      const res = await fetch('/api/presupuesto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      });
+      })
 
       if (!res.ok) {
-        throw new Error("Error al enviar");
+        throw new Error('Error al enviar')
       }
 
-      toast.success("¡Solicitud enviada!", {
+      toast.success('¡Solicitud enviada!', {
         description:
-          "Nos pondremos en contacto pronto con tu presupuesto personalizado.",
-      });
+          'Nos pondremos en contacto pronto con tu presupuesto personalizado.',
+      })
 
-      // Armar mensaje de WhatsApp con datos clave
+      const evento =
+        data.tipoEvento === 'otro' ? data.tipoEvento_otro : data.tipoEvento
+      const tanda =
+        data.tandaComida === 'estandar'
+          ? 'Una tanda'
+          : data.tandaComida === 'extendido'
+            ? 'Dos o más tanda'
+            : '—'
+
       const lineas = [
         `Hola! Acabo de enviar una solicitud de presupuesto.`,
-        `Nombre: ${data.nombre || "—"}`,
-        `Evento: ${data.tipoEvento === "otro" ? data.tipoEvento_otro : data.tipoEvento || "—"}`,
-        `Fecha: ${data.fecha || "—"}`,
-        `Invitados: ${data.cantidadPersonas || "—"}`,
-        data.presupuestoEstimado
-          ? `Presupuesto: ${data.presupuestoEstimado}`
-          : "",
-      ].filter(Boolean);
+        `Nombre: ${data.nombreYApellido || '—'}`,
+        `Email: ${data.email || '—'}`,
+        `Telefono: ${data.numeroDeTelefono || '—'}`,
+        `Evento: ${evento || '—'}`,
+        `Fecha: ${data.fechaTentativa || '—'}`,
+        `Invitados: ${data.cantidadDePersonas || '—'}`,
+      ].filter(Boolean)
 
-      const textoWA = encodeURIComponent(lineas.join("\n"));
-      window.open(`https://wa.me/5491139240988?text=${textoWA}`, "_blank");
+      const textoWA = encodeURIComponent(lineas.join('\n'))
+      window.open(`https://wa.me/5491139240988?text=${textoWA}`, '_blank')
 
-      form.reset();
-      setStep(1);
+      form.reset()
+      setStep(1)
     } catch {
-      toast.error("Hubo un error al enviar la solicitud.", {
-        description: "Por favor, intentá de nuevo o contactanos por WhatsApp.",
-      });
+      toast.error('Hubo un error al enviar la solicitud.', {
+        description: 'Por favor, intentá de nuevo o contactanos por WhatsApp.',
+      })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   }
 
   // -- Render fields with grouping & separators ---------------------------
   function renderFields(campos: CampoConfig[]) {
-    const rows = groupFieldsByWidth(campos);
+    const rows = groupFieldsByWidth(campos)
 
     return rows.map((row, rowIdx) => {
-      const showSeparator = rowIdx < rows.length - 1;
+      const showSeparator = rowIdx < rows.length - 1
 
       if (row.length === 1) {
         return (
@@ -789,11 +798,11 @@ export function FormPresupuesto({
             />
             {showSeparator && <FieldSeparator />}
           </React.Fragment>
-        );
+        )
       }
 
       return (
-        <React.Fragment key={row.map((c) => c._key || c.clave).join("-")}>
+        <React.Fragment key={row.map((c) => c._key || c.clave).join('-')}>
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             {row.map((campo) => (
               <RenderCampo
@@ -807,8 +816,8 @@ export function FormPresupuesto({
           </div>
           {showSeparator && <FieldSeparator />}
         </React.Fragment>
-      );
-    });
+      )
+    })
   }
 
   // -----------------------------------------------------------------------
@@ -820,22 +829,22 @@ export function FormPresupuesto({
       <div className='flex items-center gap-4 mb-2'>
         <div
           className={cn(
-            "flex items-center gap-2 text-sm font-medium",
-            step >= 1 ? "text-orange-500" : "text-white/40",
+            'flex items-center gap-2 text-sm font-medium',
+            step >= 1 ? 'text-orange-500' : 'text-white/40',
           )}
         >
           <span
             className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold",
+              'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold',
               step > 1
-                ? "border-green-500/50 bg-green-500/10 text-green-400"
-                : "border-orange-500 bg-orange-500/10 text-orange-500",
+                ? 'border-green-500/50 bg-green-500/10 text-green-400'
+                : 'border-orange-500 bg-orange-500/10 text-orange-500',
             )}
           >
-            {step > 1 ? "✓" : "1"}
+            {step > 1 ? '✓' : '1'}
           </span>
           <span className='hidden sm:inline'>
-            {resolvedConfig.paso1Titulo || "Paso 1"}
+            {resolvedConfig.paso1Titulo || 'Paso 1'}
           </span>
         </div>
 
@@ -843,22 +852,22 @@ export function FormPresupuesto({
 
         <div
           className={cn(
-            "flex items-center gap-2 text-sm font-medium",
-            step === 2 ? "text-orange-500" : "text-white/40",
+            'flex items-center gap-2 text-sm font-medium',
+            step === 2 ? 'text-orange-500' : 'text-white/40',
           )}
         >
           <span
             className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold",
+              'flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold',
               step === 2
-                ? "border-orange-500 bg-orange-500/10 text-orange-500"
-                : "border-white/20 text-white/40",
+                ? 'border-orange-500 bg-orange-500/10 text-orange-500'
+                : 'border-white/20 text-white/40',
             )}
           >
             2
           </span>
           <span className='hidden sm:inline'>
-            {resolvedConfig.paso2Titulo || "Paso 2"}
+            {resolvedConfig.paso2Titulo || 'Paso 2'}
           </span>
         </div>
       </div>
@@ -875,7 +884,7 @@ export function FormPresupuesto({
           {campos2.length > 0 && (
             <div className='flex justify-end pt-4'>
               <Button type='button' onClick={goToStep2}>
-                {resolvedConfig.textoBotonSiguiente || "Siguiente →"}
+                {resolvedConfig.textoBotonSiguiente || 'Siguiente →'}
               </Button>
             </div>
           )}
@@ -883,8 +892,8 @@ export function FormPresupuesto({
             <div className='flex justify-end pt-4'>
               <Button type='submit' disabled={isSubmitting}>
                 {isSubmitting
-                  ? "Enviando..."
-                  : resolvedConfig.textoBotonEnviar || "Enviar solicitud"}
+                  ? 'Enviando...'
+                  : resolvedConfig.textoBotonEnviar || 'Enviar solicitud'}
               </Button>
             </div>
           )}
@@ -902,16 +911,16 @@ export function FormPresupuesto({
           {renderFields(campos2)}
           <div className='flex justify-between pt-4'>
             <Button type='button' variant='outline' onClick={goToStep1}>
-              {resolvedConfig.textoBotonVolver || "← Volver"}
+              {resolvedConfig.textoBotonVolver || '← Volver'}
             </Button>
             <Button type='submit' disabled={isSubmitting}>
               {isSubmitting
-                ? "Enviando..."
-                : resolvedConfig.textoBotonEnviar || "Enviar solicitud"}
+                ? 'Enviando...'
+                : resolvedConfig.textoBotonEnviar || 'Enviar solicitud'}
             </Button>
           </div>
         </FieldGroup>
       )}
     </form>
-  );
+  )
 }
