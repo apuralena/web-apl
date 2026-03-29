@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   site: "https://apuraleña.com.ar",
+  favicon: "/favicon.ico",
   integrations: [
     sitemap({
       changefreq: "weekly",
