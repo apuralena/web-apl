@@ -21,6 +21,8 @@ const { nombreEvento, emojiPreVista, subtituloEvento, slug, imagen } = Astro.pro
           src={imagen}
           alt={nombreEvento}
           class='w-full h-full object-cover transition-transform duration-300 group-hover:scale-105'
+          loading='lazy'
+          decoding='async'
           transition:name={`evento-imagen-${slug}`}
         />
       </div>
