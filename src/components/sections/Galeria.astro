@@ -1,0 +1,38 @@
+---
+import Section from "../Section.astro";
+import PhotoGallery from "../PhotoGallery";
+import { sanityClient } from "sanity:client";
+
+const galeriaData = await sanityClient.fetch(`*[_type == "galeria"][0]{
+  titulo,
+  fotos[]{
+    alt,
+    asset->{
+      url
+    }
+  }
+}`);
+
+const fotos =
+  galeriaData?.fotos?.map((f: any) => ({
+    url: f.asset?.url,
+    alt: f.alt,
+  })) || [];
+---
+
+<Section id='galeria'>
+  <div class='space-y-4 mb-12'>
+    <p class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'>
+      Portfolio
+    </p>
+    <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+      Galería de Fotos
+    </h2>
+    <p class='text-white/70 text-lg leading-relaxed max-w-2xl'>
+      Mirá nuestras experiencias únicas en eventos anteriores. Desde reuniones
+      íntimas hasta celebraciones masivas.
+    </p>
+  </div>
+
+  {fotos.length > 0 && <PhotoGallery fotos={fotos} client:visible />}
+</Section>

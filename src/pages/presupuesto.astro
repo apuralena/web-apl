@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro'
+import Section from '../components/Section.astro'
+import { FormPresupuesto } from '../components/Form.jsx'
+import { sanityClient } from 'sanity:client'
+
+const formConfig = await sanityClient.fetch(`*[_type == "formulario"][0]`)
+const eventos = await sanityClient.fetch(
+  `*[_type == "eventos"]{ nombreEvento } | order(nombreEvento asc)`,
+)
+const propuestas = await sanityClient.fetch(
+  `*[_type == "propuesta"]{ titulo, descripcion } | order(titulo asc)`,
+)
+---
+
+<Layout title='Presupuesto'>
+  <Section narrow>
+    <button
+      type='button'
+      onclick='window.history.back()'
+      class='inline-flex items-center gap-2 text-sm text-white/70 hover:text-orange-500 transition-colors mb-8 cursor-pointer'
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='16'
+        height='16'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      >
+        <path d='m12 19-7-7 7-7'></path>
+        <path d='M19 12H5'></path>
+      </svg>
+      Volver
+    </button>
+
+    <div class='space-y-4 mb-12'>
+      <p class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'>
+        Cotización
+      </p>
+      <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+        Solicitar Presupuesto
+      </h2>
+      <p class='text-white/70 text-lg leading-relaxed'>
+        Completá el formulario y te contactaremos con una propuesta
+        personalizada para tu evento.
+      </p>
+    </div>
+    <div
+      class='rounded-xl border border-white/10 bg-white/3 backdrop-blur-sm p-6 md:p-8'
+    >
+      <FormPresupuesto
+        client:load
+        config={formConfig}
+        eventos={eventos}
+        propuestas={propuestas}
+      />
+    </div>
+  </Section>
+</Layout>

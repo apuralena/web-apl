@@ -11,14 +11,6 @@ export const eventosType = {
       description: "Ej: Casamientos",
     },
     {
-      name: "emojiPreVista",
-      type: "string",
-      title: "Emoji de Pre-Vista",
-      description:
-        "Un emoji que represente el evento, para mostrar en la pre-vista.",
-      initialValue: "🎉",
-    },
-    {
       name: "subtituloEvento",
       type: "string",
       title: "Subtítulo del Evento",

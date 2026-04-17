@@ -5,7 +5,7 @@ import { sanityClient } from "sanity:client";
 
 const formConfig = await sanityClient.fetch(`*[_type == "formulario"][0]`);
 const eventos = await sanityClient.fetch(
-  `*[_type == "eventos"]{ nombreEvento, emojiPreVista } | order(nombreEvento asc)`,
+  `*[_type == "eventos"]{ nombreEvento } | order(nombreEvento asc)`,
 );
 const propuestas = await sanityClient.fetch(
   `*[_type == "propuesta"]{ titulo, descripcion } | order(titulo asc)`,
@@ -20,7 +20,7 @@ const propuestas = await sanityClient.fetch(
     <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
       Presupuesto
     </h2>
-    <p class='text-white/40 text-lg leading-relaxed'>
+    <p class='text-white/70 text-lg leading-relaxed'>
       Completá el formulario y te contactaremos con una propuesta personalizada
       para tu evento.
     </p>

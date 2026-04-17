@@ -1,0 +1,21 @@
+{
+  "name": "A Pura Leña - Catering de Asado",
+  "short_name": "A Pura Leña",
+  "description": "Catering de asado argentino para eventos en Buenos Aires",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#ea580c",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import { eventosType } from "./eventosType";
 import { nosotrosType } from "./nosotrosType";
 import { galeriaType } from "./galeriaType";
 import { resenaType } from "./resenaType";
+import { lugarType } from "./lugarType";
 import {
   opcionFormularioType,
   campoFormularioType,
@@ -18,6 +19,7 @@ export const schemaTypes = [
   nosotrosType,
   galeriaType,
   resenaType,
+  lugarType,
   opcionFormularioType,
   campoFormularioType,
   formType,

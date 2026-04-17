@@ -1,11 +1,11 @@
-"use client";
-import { cn } from "@/lib/utils";
-import React from "react";
-import type { ReactNode } from "react";
+'use client'
+import { cn } from '@/lib/utils'
+import React from 'react'
+import type { ReactNode } from 'react'
 
 interface AuroraBackgroundProps extends React.HTMLProps<HTMLDivElement> {
-  children?: ReactNode;
-  showRadialGradient?: boolean;
+  children?: ReactNode
+  showRadialGradient?: boolean
 }
 
 export const AuroraBackground = ({
@@ -16,7 +16,7 @@ export const AuroraBackground = ({
   return (
     <div
       className={cn(
-        "fixed inset-0 w-full h-full bg-zinc-800 pointer-events-none z-0",
+        'fixed inset-0 w-full h-screen bg-zinc-950 pointer-events-none z-0',
         className,
       )}
       {...props}
@@ -25,20 +25,20 @@ export const AuroraBackground = ({
         className='absolute inset-0 overflow-hidden'
         style={
           {
-            "--aurora":
-              "repeating-linear-gradient(100deg,#c2410c_10%,#ea580c_15%,#f97316_20%,#fb923c_25%,#d97706_30%)",
-            "--dark-gradient":
-              "repeating-linear-gradient(100deg,#000_0%,#000_7%,transparent_10%,transparent_12%,#000_16%)",
-            "--white-gradient":
-              "repeating-linear-gradient(100deg,#000_0%,#000_7%,transparent_10%,transparent_12%,#000_16%)",
+            '--aurora':
+              'repeating-linear-gradient(100deg,#c2410c_10%,#ea580c_15%,#f97316_20%,#fb923c_25%,#d97706_30%)',
+            '--dark-gradient':
+              'repeating-linear-gradient(100deg,#000_0%,#000_7%,transparent_10%,transparent_12%,#000_16%)',
+            '--white-gradient':
+              'repeating-linear-gradient(100deg,#000_0%,#000_7%,transparent_10%,transparent_12%,#000_16%)',
 
-            "--orange-700": "#c2410c",
-            "--orange-600": "#ea580c",
-            "--orange-500": "#f97316",
-            "--orange-400": "#fb923c",
-            "--amber-600": "#d97706",
-            "--black": "#000",
-            "--transparent": "transparent",
+            '--orange-700': '#c2410c',
+            '--orange-600': '#ea580c',
+            '--orange-500': '#f97316',
+            '--orange-400': '#fb923c',
+            '--amber-600': '#d97706',
+            '--black': '#000',
+            '--transparent': 'transparent',
           } as React.CSSProperties
         }
       >
@@ -52,5 +52,5 @@ export const AuroraBackground = ({
         ></div>
       </div>
     </div>
-  );
-};
+  )
+}

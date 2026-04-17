@@ -1,0 +1,83 @@
+---
+import Section from "../Section.astro";
+import { sanityClient } from "sanity:client";
+
+const zonas = ["zona-norte", "caba", "zona-oeste", "zona-sur"];
+
+const zonaNombres: Record<string, string> = {
+  "zona-norte": "Zona Norte",
+  "caba": "CABA",
+  "zona-oeste": "Zona Oeste",
+  "zona-sur": "Zona Sur",
+};
+
+const zonaDescripciones: Record<string, string> = {
+  "zona-norte": "Naturaleza, amplitud y el equilibrio perfecto entre lo rústico y lo elegante.",
+  "caba": "Espacios urbanos con carácter, diseño y mucha personalidad.",
+  "zona-oeste": "El espíritu más auténtico: campo, fuego y libertad.",
+  "zona-sur": "Espacios con identidad propia, más exclusivos y rodeados de naturaleza.",
+};
+
+const lugaresPorZona = await Promise.all(
+  zonas.map(async (zona) => {
+    const query = `*[_type == "lugar" && zona == $zona]`;
+    const lugares = await sanityClient.fetch(query, { zona });
+    return { zona, lugares };
+  })
+);
+---
+
+<Section id='espacios'>
+  <div class='space-y-4 mb-12'>
+    <p class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'>
+      Espacios
+    </p>
+    <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+      Elegí tu espacio
+    </h2>
+    <p class='text-white/70 text-lg leading-relaxed max-w-2xl'>
+      No todos los lugares generan lo mismo. Nosotros trabajamos solo con espacios
+      que están a la altura de la experiencia. Te ayudamos a encontrar el
+      lugar ideal según la cantidad de invitados, el estilo del evento y la
+      experiencia que quieras vivir.
+    </p>
+  </div>
+
+  <div class='space-y-4'>
+    {
+      lugaresPorZona.map(
+        ({ zona, lugares }) => (
+          <a
+            href={`/lugares/${zona}`}
+            class='group flex items-center justify-between p-6 rounded-xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-orange-500/30 transition-all duration-300'
+          >
+            <div>
+              <h3 class='text-xl font-semibold text-white mb-1'>
+                {zonaNombres[zona]}
+              </h3>
+              <p class='text-white/50 text-sm'>
+                {zonaDescripciones[zona]}
+              </p>
+            </div>
+            <span class='text-white/50 text-sm'>
+              {lugares.length} lug{lugares.length === 1 ? "ar" : "ares"}
+            </span>
+          </a>
+        )
+      )
+    }
+  </div>
+
+  <div class='mt-12 text-center p-8 rounded-xl border border-white/10 bg-white/5'>
+    <p class='text-white/70 mb-4'>
+      ¿No sabés qué lugar elegir? Te recomendamos opciones reales según
+      tu evento, cantidad de invitados y presupuesto.
+    </p>
+    <a
+      href='/presupuesto'
+      class='inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300'
+    >
+      Quiero que me recomienden un lugar
+    </a>
+  </div>
+</Section>

@@ -1,0 +1,164 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+import Section from '../../../components/Section.astro'
+import { sanityClient } from 'sanity:client'
+
+export async function getStaticPaths() {
+  const lugares = await sanityClient.fetch(
+    `*[_type == "lugar"]{ "slug": slug.current, zona }`,
+  )
+
+  return lugares.map((lugar) => ({
+    params: { slug: lugar.zona, place: lugar.slug },
+  }))
+}
+
+const { slug, place } = Astro.params
+
+const lugar = await sanityClient.fetch(
+  `*[_type == "lugar" && slug.current == $place][0]{
+    nombre,
+    descripcion,
+    "imagenes": imagenes[].asset->url,
+    caracteristicas,
+    idealPara,
+    textoBoton
+  }`,
+  { place },
+)
+
+const zonaNombres: Record<string, string> = {
+  'zona-norte': 'Zona Norte',
+  caba: 'CABA',
+  'zona-oeste': 'Zona Oeste',
+  'zona-sur': 'Zona Sur',
+}
+
+const WhatsAppNumber = '5491169888899'
+const mensaje = encodeURIComponent(
+  `Hola! Quiero consultar por el lugar ${lugar?.nombre}`,
+)
+const whatsappUrl = `https://wa.me/${WhatsAppNumber}?text=${mensaje}`
+---
+
+<Layout title={`${lugar?.nombre} | A Pura Leña`}>
+  <Section narrow>
+    <a
+      href={`/lugares/${slug}`}
+      class='inline-flex items-center gap-2 text-sm text-white/70 hover:text-orange-500 transition-colors mb-8'
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='16'
+        height='16'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      >
+        <path d='m12 19-7-7 7-7'></path>
+        <path d='M19 12H5'></path>
+      </svg>
+      Volver a {zonaNombres[slug as string]}
+    </a>
+
+    {
+      lugar && (
+        <>
+          <div class='space-y-4 mb-8'>
+            <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+              {lugar.nombre}
+            </h2>
+            <p class='text-white/70 text-lg leading-relaxed'>
+              {lugar.descripcion}
+            </p>
+          </div>
+
+          {/* Imagen principal como cover */}
+          <div class='mb-8 rounded-xl overflow-hidden aspect-video'>
+            {lugar.imagenes && lugar.imagenes[0] ? (
+              <img
+                src={lugar.imagenes[0]}
+                alt={lugar.nombre}
+                class='w-full h-full object-cover'
+              />
+            ) : (
+              <div class='w-full h-full bg-gradient-to-br from-orange-500/20 to-transparent flex items-center justify-center'>
+                <span class='text-2xl font-medium text-white/30'>
+                  {lugar.nombre}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Galería de imágenes */}
+          {lugar.imagenes && lugar.imagenes.length > 1 && (
+            <div class='grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'>
+              {lugar.imagenes.slice(1).map((img) => (
+                <div class='rounded-lg overflow-hidden aspect-square'>
+                  <img
+                    src={img}
+                    alt={lugar.nombre}
+                    class='w-full h-full object-cover'
+                    loading='lazy'
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Características */}
+          {lugar.caracteristicas && lugar.caracteristicas.length > 0 && (
+            <div class='mb-8'>
+              <h3 class='text-lg font-semibold text-white mb-4'>
+                Características
+              </h3>
+              <ul class='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                {lugar.caracteristicas.map((carac) => (
+                  <li class='flex items-center gap-3 text-white/70'>
+                    <span class='w-2 h-2 rounded-full bg-orange-500' />
+                    {carac}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Ideal para */}
+          {lugar.idealPara && (
+            <div class='mb-8 p-6 rounded-xl border border-white/10 bg-white/5'>
+              <h3 class='text-lg font-semibold text-white mb-2'>Ideal para</h3>
+              <p class='text-white/70'>{lugar.idealPara}</p>
+            </div>
+          )}
+
+          {/* CTA */}
+          <a
+            href={whatsappUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            class='inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300'
+          >
+            {lugar.textoBoton || 'Consultar disponibilidad'}
+          </a>
+        </>
+      )
+    }
+
+    {
+      !lugar && (
+        <div class='text-center py-12'>
+          <p class='text-white/50'>Lugar no encontrado.</p>
+          <a
+            href='/lugares/zona-norte'
+            class='text-orange-500 hover:text-orange-400 mt-4 inline-block'
+          >
+            Ver todos los lugares
+          </a>
+        </div>
+      )
+    }
+  </Section>
+</Layout>

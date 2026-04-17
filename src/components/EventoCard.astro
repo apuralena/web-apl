@@ -1,13 +1,12 @@
 ---
 interface Props {
   nombreEvento: string;
-  emojiPreVista: string;
   subtituloEvento: string;
   slug: string;
   imagen?: string;
 }
 
-const { nombreEvento, emojiPreVista, subtituloEvento, slug, imagen } = Astro.props;
+const { nombreEvento, subtituloEvento, slug, imagen } = Astro.props;
 ---
 
 <a
@@ -27,15 +26,8 @@ const { nombreEvento, emojiPreVista, subtituloEvento, slug, imagen } = Astro.pro
         />
       </div>
     ) : (
-      <div
-        class='h-48 w-full flex items-center justify-center bg-linear-to-br from-orange-500/10 to-transparent'
-      >
-        <span
-          class='text-6xl transition-transform duration-300 group-hover:scale-110'
-          transition:name={`evento-emoji-${slug}`}
-        >
-          {emojiPreVista}
-        </span>
+      <div class='h-48 w-full flex items-center justify-center bg-gradient-to-br from-orange-500/20 to-transparent'>
+        <span class='text-4xl font-medium text-white/30'>Foto</span>
       </div>
     )
   }
@@ -48,7 +40,7 @@ const { nombreEvento, emojiPreVista, subtituloEvento, slug, imagen } = Astro.pro
       {nombreEvento}
     </h3>
     <p
-      class='text-sm text-white/40 mb-6 leading-relaxed'
+      class='text-sm text-white/70 mb-6 leading-relaxed'
       transition:name={`evento-subtitulo-${slug}`}
     >
       {subtituloEvento}

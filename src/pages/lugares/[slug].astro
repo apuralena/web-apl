@@ -1,0 +1,190 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import Section from '../../components/Section.astro'
+import { sanityClient } from 'sanity:client'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+  const zonas = ['zona-norte', 'caba', 'zona-oeste', 'zona-sur']
+
+  return zonas.map((zona) => ({
+    params: { slug: zona },
+  }))
+}
+
+const { slug } = Astro.params
+
+const zonaNombres: Record<string, string> = {
+  'zona-norte': 'Zona Norte',
+  caba: 'CABA',
+  'zona-oeste': 'Zona Oeste',
+  'zona-sur': 'Zona Sur',
+}
+
+const zonaCoverImages: Record<string, string> = {
+  'zona-norte':
+    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80',
+  caba: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=800&q=80',
+  'zona-oeste':
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+  'zona-sur':
+    'https://images.unsplash.com/photo-1582268614968-5537cbe7d07e?w=800&q=80',
+}
+
+const zonaDescripciones: Record<string, string> = {
+  'zona-norte':
+    'Naturaleza, amplitud y el equilibrio perfecto entre lo rústico y lo elegante.',
+  caba: 'Espacios urbanos con carácter, diseño y mucha personalidad.',
+  'zona-oeste':
+    'El espíritu más auténtico de A Pura Leña: campo, fuego y libertad.',
+  'zona-sur':
+    'Espacios con identidad propia, más exclusivos y rodeados de naturaleza.',
+}
+
+const zonaIdeales: Record<string, string> = {
+  'zona-norte':
+    'Ideal para eventos donde el fuego, el aire libre y la puesta en escena son protagonistas.',
+  caba: 'Ideal para eventos más descontracturados, modernos y con impronta urbana.',
+  'zona-oeste':
+    'Ideal para eventos sin límites, donde la experiencia gastronómica es protagonista.',
+  'zona-sur':
+    'Ideal para eventos íntimos, con una estética cuidada y mucha conexión con el entorno.',
+}
+
+const lugares = await sanityClient.fetch(
+  `*[_type == "lugar" && zona == $slug]{
+    nombre,
+    "slug": slug.current,
+    descripcion,
+    "imagenes": imagenes[].asset->url,
+    caracteristicas,
+    idealPara,
+    textoBoton
+  }`,
+  { slug },
+)
+
+const zona = slug as string
+---
+
+<Layout title={`Lugares en ${zonaNombres[zona]} | A Pura Leña`}>
+  <Section narrow>
+    <a
+      href='/#espacios'
+      class='inline-flex items-center gap-2 text-sm text-white/70 hover:text-orange-500 transition-colors mb-8'
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        width='16'
+        height='16'
+        viewBox='0 0 24 24'
+        fill='none'
+        stroke='currentColor'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      >
+        <path d='m12 19-7-7 7-7'></path>
+        <path d='M19 12H5'></path>
+      </svg>
+      Volver a Espacios
+    </a>
+
+    <div class='space-y-4 mb-12'>
+      <p class='text-sm font-medium tracking-[0.3em] uppercase text-orange-500'>
+        Lugares
+      </p>
+      <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
+        {zonaNombres[zona]}
+      </h2>
+      <p class='text-white/70 text-lg leading-relaxed'>
+        {zonaDescripciones[zona]}
+      </p>
+      <p class='text-white/70'>
+        {zonaIdeales[zona]}
+      </p>
+    </div>
+
+    <div class='grid grid-cols-1 gap-8'>
+      {
+        lugares.map((lugar) => (
+          <a
+            href={`/lugares/${slug}/${lugar.slug}`}
+            class='group flex flex-col md:flex-row rounded-xl border border-white/10 bg-white/5 overflow-hidden hover:border-orange-500/30 transition-all duration-300'
+          >
+            <div class='md:w-1/2 aspect-video md:aspect-auto overflow-hidden'>
+              {lugar.imagenes && lugar.imagenes[0] ? (
+                <img
+                  src={lugar.imagenes[0]}
+                  alt={lugar.nombre}
+                  class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
+                  loading='lazy'
+                />
+              ) : (
+                <img
+                  src={zonaCoverImages[slug as string]}
+                  alt={lugar.nombre}
+                  class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
+                  loading='lazy'
+                />
+              )}
+            </div>
+            <div class='p-6 md:w-1/2 flex flex-col justify-center'>
+              <h3 class='text-2xl font-semibold text-white mb-2'>
+                {lugar.nombre}
+              </h3>
+              <p class='text-white/70 mb-4 line-clamp-2'>{lugar.descripcion}</p>
+              {lugar.caracteristicas && lugar.caracteristicas.length > 0 && (
+                <ul class='text-white/50 text-sm mb-4 space-y-1'>
+                  {lugar.caracteristicas.slice(0, 3).map((carac) => (
+                    <li class='flex items-center gap-2'>
+                      <span class='w-1.5 h-1.5 rounded-full bg-orange-500/50' />
+                      {carac}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <span class='mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-orange-500 group-hover:text-orange-400 transition-colors'>
+                {lugar.textoBoton || 'Consultar'}
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  width='14'
+                  height='14'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  stroke-width='2'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  class='transition-transform group-hover:translate-x-1'
+                >
+                  <>
+                    <path d='M5 12h14' />
+                    <path d='m12 5 7 7-7 7' />
+                  </>
+                </svg>
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    {
+      lugares.length === 0 && (
+        <div class='text-center py-12'>
+          <p class='text-white/50 mb-4'>
+            No hay lugares cargados en esta zona todavía.
+          </p>
+          <a
+            href='/presupuesto'
+            class='inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300'
+          >
+            Consultar disponibilidad
+          </a>
+        </div>
+      )
+    }
+  </Section>
+</Layout>

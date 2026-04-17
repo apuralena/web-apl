@@ -7,8 +7,9 @@ export const navItems: NavItem[] = [
   { href: "/#inicio", text: "Inicio" },
   { href: "/#eventos", text: "Eventos" },
   { href: "/#propuestas", text: "Propuestas" },
-  { href: "/#experiencias", text: "Experiencias" },
+  { href: "/#espacios", text: "Espacios" },
+  { href: "/#galeria", text: "Galería" },
   { href: "/#nosotros", text: "Nosotros" },
+  { href: "/presupuesto", text: "Presupuesto" },
   { href: "/#contacto", text: "Contacto" },
-  { href: "/#presupuesto", text: "Presupuesto" },
 ];
