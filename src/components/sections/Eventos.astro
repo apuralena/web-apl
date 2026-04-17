@@ -5,7 +5,6 @@ import { sanityClient } from "sanity:client";
 
 const eventosRaw = await sanityClient.fetch(`*[_type == "eventos"]{
   nombreEvento,
-  emojiPreVista,
   subtituloEvento,
   "imagen": fotoEvento.asset->url
 }`);
@@ -27,7 +26,7 @@ const eventos = eventosRaw.map((evento) => ({
     <h2 class='text-4xl md:text-5xl font-bold tracking-tight text-white'>
       Nuestros Eventos
     </h2>
-    <p class='text-white/40 text-lg leading-relaxed max-w-2xl'>
+    <p class='text-white/70 text-lg leading-relaxed max-w-2xl'>
       Cada evento es una experiencia única. Elegí el formato que más se adapte a
       tu celebración.
     </p>
@@ -37,7 +36,6 @@ const eventos = eventosRaw.map((evento) => ({
       eventos.map((evento) => (
         <EventoCard
           nombreEvento={evento.nombreEvento}
-          emojiPreVista={evento.emojiPreVista}
           subtituloEvento={evento.subtituloEvento}
           slug={evento.slug}
           imagen={evento.imagen}

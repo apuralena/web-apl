@@ -6,31 +6,44 @@ import WhatsAppButton from "../components/WhatsAppButton.astro";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { AuroraBackground } from "../components/ui/aurora-background";
 import { Toaster } from "sonner";
-import { sanityClient } from "sanity:client";
 import "../styles/global.css";
 interface Props {
   title: string;
+  resenas?: Array<{
+    autor: string;
+    texto: string;
+    estrellas: number;
+    fecha?: string;
+  }>;
 }
-const { title } = Astro.props;
 
-const resenas =
-  (await sanityClient.fetch(`*[_type == "resena"] | order(_createdAt desc) [0...6]{
-  autor,
-  texto,
-  estrellas,
-  fecha
-}`)) || [];
+const { title, resenas = [] } = Astro.props;
 ---
 
-<!doctype html>
-<html lang='es'>
+<html class='bg-zinc-950' style='min-height: 100vh'>
   <head>
     <meta charset='UTF-8' />
-    <meta name='viewport' content='width=device-width' />
-    <link rel='icon' href='/favicon.ico' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel='icon' type='image/png' sizes='32x32' href='/logo.png' />
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
-    <link rel='apple-touch-icon' href='/favicon.svg' />
+    <link rel='apple-touch-icon' href='/logo.png' />
+    <link rel='shortcut icon' href='/favicon.ico' />
+    <meta name='theme-color' content='#ea580c' />
+    <link rel='manifest' href='/manifest.json' />
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
     <meta name='google-site-verification' content='LHQ-CIk8d5l8eq9pbZ5u917pfr6ZKVNt7eJr47GKr7Y' />
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src='https://www.googletagmanager.com/gtag/js?id=AW-17382086038'></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-17382086038');
+    </script>
+    
+    <!-- Preload fuentes críticas -->
     <link rel='preconnect' href='https://fonts.googleapis.com' />
     <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
     <link rel='preconnect' href='https://cdn.sanity.io' />
@@ -47,6 +60,36 @@ const resenas =
       @font-face {
         font-family: 'Inter';
         font-display: swap;
+      }
+      
+      /* Skip to content para accesibilidad */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: #ea580c;
+        color: white;
+        padding: 8px 16px;
+        z-index: 100;
+        transition: top 0.3s;
+      }
+      .skip-link:focus {
+        top: 0;
+      }
+      
+      /* Estados de focus mejorados */
+      *:focus-visible {
+        outline: 2px solid #ea580c;
+        outline-offset: 2px;
+      }
+      
+      /* Reducir motion en prefers-reduced-motion */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
     </style>
     <meta name='generator' content={Astro.generator} />
@@ -77,18 +120,20 @@ const resenas =
         "@context": "https://schema.org",
         "@type": "CateringService",
         "name": "A Pura Leña",
-        "description": "Catering de asado argentino para eventos sociales, corporativos, casamientos y eventos masivos",
+        "description": "Catering de asado argentino para eventos sociales, corporativos, casamientos y eventos masivos en CABA y GBA. Carne de primera, servicio completo a leña.",
         "url": "https://apuraleña.com.ar",
         "telephone": "+5491139240988",
         "email": "apuralena9@gmail.com",
-        "areaServed": {
-          "@type": "State",
-          "name": "Ciudad Autónoma de Buenos Aires"
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Buenos Aires",
+          "addressRegion": "CABA",
+          "addressCountry": "AR"
         },
-        "areaServed": {
-          "@type": "State",
-          "name": "Buenos Aires"
-        },
+        "areaServed": [
+          {"@type": "State", "name": "Ciudad Autónoma de Buenos Aires"},
+          {"@type": "State", "name": "Buenos Aires"}
+        ],
         "priceRange": "$$$",
         "openingHours": "Mo-Fr 09:00-20:00",
         "image": "https://apuraleña.com.ar/og-image.png",
@@ -96,32 +141,129 @@ const resenas =
           "https://www.instagram.com/a_pura_lena/",
           "https://www.facebook.com/profile.php?id=61561940952103",
           "https://www.youtube.com/@apuraleña"
+        ],
+        "hasMenu": "https://apuraleña.com.ar/presupuesto",
+        "servesCuisine": "Argentinian",
+        "acceptsReservations": "True"
+      }
+    </script>
+    
+    <!-- FAQ Schema -->
+    <script type='application/ld+json'>
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Qué incluye el servicio de catering de A Pura Leña?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Nuestro servicio incluye: parrillero profesional, carne de primera calidad, acompañamiento completo,mesa de servicio, vasos, platos y cubiertos descartables de calidad, y limpieza básica del área."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿En qué zonas ofrecen el servicio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Ofrecemos catering en CABA y toda la provincia de Buenos Aires: Zona Norte, Zona Sur, Zona Oeste y CABA."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuántas personas mínimo sirven?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Servimos eventos desde 10 personas hasta eventos masivos de miles de invitados."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Tienen menú vegetariano?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí, tenemos opciones vegetarianas y veganas. Consultános por tu evento."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cómo reservo el servicio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Podés solicitarnos un presupuesto completando el formulario en nuestra web o escribinos directamente por WhatsApp."
+            }
+          }
+        ]
+      }
+    </script>
+    
+    <!-- BreadcrumbList -->
+    <script type='application/ld+json'>
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://apuraleña.com.ar/"},
+          {"@type": "ListItem", "position": 2, "name": "Presupuesto", "item": "https://apuraleña.com.ar/presupuesto"}
         ]
       }
     </script>
     <ClientRouter />
   </head>
-  <body>
-    <div class='aurora-wrapper' transition:persist='aurora-bg'>
-      <AuroraBackground client:load />
+  <body class='bg-zinc-950 min-h-screen' style='overflow-x: visible; min-height: 100vh'>
+    <!-- Skip to content link -->
+    <a href='#main-content' class='skip-link'>Saltar al contenido</a>
+    
+    <!-- Aurora visible -->
+    <div class='aurora-wrapper'>
+      <AuroraBackground client:idle />
     </div>
-    <div class='content-wrapper'>
+    
+    <div class='content-wrapper' style='position: relative'>
       <Header />
-      <slot />
-      <Footer resenas={resenas} client:visible />
+      <main style='min-height: 50vh'>
+        <slot />
+      </main>
+      <Footer resenas={[]} client:visible />
     </div>
-    <Toaster client:load richColors position='top-right' />
+    
     <WhatsAppButton />
+    
+    <script is:inline>
+      function handleHashScroll() {
+        const hash = window.location.hash;
+        if (hash) {
+          const target = document.querySelector(hash);
+          if (target) {
+            setTimeout(() => {
+              const header = document.querySelector('header');
+              const headerHeight = header ? header.offsetHeight : 80;
+              const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+              window.scrollTo({ top: targetPosition, behavior: 'auto' });
+            }, 100);
+          }
+        }
+      }
+      
+      if (document.readyState === 'complete') {
+        handleHashScroll();
+      } else {
+        window.addEventListener('load', handleHashScroll);
+      }
+      
+      window.addEventListener('popstate', handleHashScroll);
+    </script>
   </body>
 </html>
 
 <style>
   html {
-    background-color: var(--background);
+    background-color: #09090b;
     margin: 0;
     padding: 0;
-    margin: 0;
     width: 100%;
+    min-height: 100vh;
     scroll-behavior: smooth;
   }
 
@@ -129,12 +271,14 @@ const resenas =
     background-color: transparent;
     margin: 0;
     width: 100%;
-    overflow-x: hidden;
+    min-height: 100vh;
   }
 
   .aurora-wrapper {
     position: fixed;
     inset: 0;
+    height: 100vh;
+    width: 100%;
     z-index: 0;
     pointer-events: none;
   }
@@ -142,6 +286,5 @@ const resenas =
   .content-wrapper {
     position: relative;
     z-index: 1;
-    min-height: 100vh;
   }
 </style>

@@ -3,18 +3,35 @@ import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
 import Eventos from "../components/sections/Eventos.astro";
 import Propuestas from "../components/sections/Propuestas.astro";
-import Experiencias from "../components/sections/Experiencias.astro";
+import Espacios from "../components/sections/Espacios.astro";
+import Galeria from "../components/sections/Galeria.astro";
+import Section from "../components/Section.astro";
+import InstagramFeed from "../components/InstagramFeed";
 import Nosotros from "../components/sections/Nosotros.astro";
 import Contacto from "../components/sections/Contacto.astro";
-import Presupuesto from "../components/sections/Presupuesto.astro";
+import { ReviewsCarousel } from "../components/ReviewsCarousel";
+import { sanityClient } from "sanity:client";
+
+const resenas = await sanityClient.fetch(`*[_type == "resena"] | order(_createdAt desc) [0...9]{
+  autor,
+  texto,
+  estrellas,
+  fecha
+}`);
 ---
 
-<Layout title='A Pura Leña'>
+<Layout title='A Pura Leña' resenas={resenas}>
   <Hero />
   <Eventos />
   <Propuestas />
-  <Experiencias />
+  <Espacios />
+  <Galeria />
+  <Section id='instagram'>
+    <InstagramFeed client:visible />
+  </Section>
   <Nosotros />
   <Contacto />
-  <Presupuesto />
+  <Section id='resenas'>
+    <ReviewsCarousel resenas={resenas} client:visible />
+  </Section>
 </Layout>
