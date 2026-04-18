@@ -26,8 +26,8 @@ const { title, resenas = [] } = Astro.props;
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link rel='icon' type='image/png' sizes='32x32' href='/logo.png' />
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <link rel='icon' type='image/webp' href='/favicon.webp' />
     <link rel='apple-touch-icon' href='/logo.png' />
-    <link rel='shortcut icon' href='/favicon.ico' />
     <meta name='theme-color' content='#ea580c' />
     <link rel='manifest' href='/manifest.json' />
     <meta name='apple-mobile-web-app-capable' content='yes' />
@@ -98,6 +98,7 @@ const { title, resenas = [] } = Astro.props;
     <link rel='canonical' href='https://www.xn--apuralea-j3a.com.ar/' />
     
     <!-- OpenGraph -->
+    <meta property='fb:app_id' content='1789000000000000' />
     <meta property='og:title' content={`${title} | A Pura Leña - Catering de Asado`} />
     <meta property='og:description' content='Catering de asado argentino para eventos en Buenos Aires. Carnes de primera, servicio completo a leña, experiencia auténtica.' />
     <meta property='og:type' content='website' />
