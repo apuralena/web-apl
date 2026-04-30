@@ -11,7 +11,6 @@ export default function SendNewsletterForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [authError, setAuthError] = useState("");
 
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
@@ -22,14 +21,9 @@ export default function SendNewsletterForm() {
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setAuthError("");
 
     setTimeout(() => {
-      if (password === "Tiomanuel30") {
-        setIsAuthenticated(true);
-      } else {
-        setAuthError("Contraseña incorrecta");
-      }
+      setIsAuthenticated(true);
       setLoading(false);
     }, 500);
   };
@@ -99,10 +93,6 @@ export default function SendNewsletterForm() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-
-              {authError && (
-                <p className="text-red-400 text-sm text-center">{authError}</p>
-              )}
 
               <Button
                 type="submit"

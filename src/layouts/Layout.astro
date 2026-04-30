@@ -9,6 +9,8 @@ import { Toaster } from "sonner";
 import "../styles/global.css";
 interface Props {
   title: string;
+  description?: string;
+  noindex?: boolean;
   resenas?: Array<{
     autor: string;
     texto: string;
@@ -17,17 +19,27 @@ interface Props {
   }>;
 }
 
-const { title, resenas = [] } = Astro.props;
+const {
+  title,
+  description = 'A Pura Leña - Catering de asado argentino para eventos sociales, corporativos, casamientos y eventos masivos en CABA y GBA. Carne de primera, servicio completo a leña.',
+  noindex = false,
+  resenas = [],
+} = Astro.props;
+
+const siteUrl = String(Astro.site ?? 'https://apuraleña.com.ar').replace(/\/$/, '');
+const canonicalUrl = new URL(Astro.url.pathname, `${siteUrl}/`).toString();
+const ogImageUrl = `${siteUrl}/og-image.png`;
 ---
 
 <html class='bg-zinc-950' style='min-height: 100vh'>
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <link rel='icon' type='image/png' sizes='32x32' href='/logo.png' />
-    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
-    <link rel='icon' type='image/webp' href='/favicon.webp' />
-    <link rel='apple-touch-icon' href='/logo.png' />
+    {noindex && <meta name='robots' content='noindex, nofollow' />}
+    <link rel='icon' href='/favicon.ico' sizes='any' />
+    <link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+    <link rel='icon' type='image/png' sizes='16x16' href='/favicon-16x16.png' />
+    <link rel='apple-touch-icon' sizes='180x180' href='/apple-touch-icon.png' />
     <meta name='theme-color' content='#ea580c' />
     <link rel='manifest' href='/manifest.json' />
     <meta name='apple-mobile-web-app-capable' content='yes' />
@@ -94,26 +106,26 @@ const { title, resenas = [] } = Astro.props;
     </style>
     <meta name='generator' content={Astro.generator} />
     <title>{title} | A Pura Leña - Catering de Asado en Buenos Aires</title>
-    <meta name='description' content='A Pura Leña - Catering de asado argentino para eventos sociales, corporativos, casamientos y eventos masivos en CABA y GBA. Carne de primera, servicio completo a leña.' />
-    <link rel='canonical' href='https://www.xn--apuralea-j3a.com.ar/' />
+    <meta name='description' content={description} />
+    <link rel='canonical' href={canonicalUrl} />
     
     <!-- OpenGraph -->
     <meta property='fb:app_id' content='1789000000000000' />
     <meta property='og:title' content={`${title} | A Pura Leña - Catering de Asado`} />
-    <meta property='og:description' content='Catering de asado argentino para eventos en Buenos Aires. Carnes de primera, servicio completo a leña, experiencia auténtica.' />
+    <meta property='og:description' content={description} />
     <meta property='og:type' content='website' />
-    <meta property='og:url' content='https://www.xn--apuralea-j3a.com.ar/' />
+    <meta property='og:url' content={canonicalUrl} />
     <meta property='og:site_name' content='A Pura Leña' />
     <meta property='og:locale' content='es_AR' />
-    <meta property='og:image' content='https://www.xn--apuralea-j3a.com.ar/og-image.png' />
+    <meta property='og:image' content={ogImageUrl} />
     <meta property='og:image:width' content='1200' />
     <meta property='og:image:height' content='630' />
     
     <!-- Twitter Card -->
     <meta name='twitter:card' content='summary_large_image' />
     <meta name='twitter:title' content={`${title} | A Pura Leña`} />
-    <meta name='twitter:description' content='Catering de asado argentino para eventos en CABA y GBA. Servicio completo a leña.' />
-    <meta name='twitter:image' content='https://www.xn--apuralea-j3a.com.ar/og-image.png' />
+    <meta name='twitter:description' content={description} />
+    <meta name='twitter:image' content={ogImageUrl} />
     
     <!-- Schema.org -->
     <script type='application/ld+json'>
@@ -122,7 +134,7 @@ const { title, resenas = [] } = Astro.props;
         "@type": "CateringService",
         "name": "A Pura Leña",
         "description": "Catering de asado argentino para eventos sociales, corporativos, casamientos y eventos masivos en CABA y GBA. Carne de primera, servicio completo a leña.",
-        "url": "https://www.xn--apuralea-j3a.com.ar",
+        "url": "https://apuraleña.com.ar",
         "telephone": "+5491139240988",
         "email": "apuralena9@gmail.com",
         "address": {
@@ -137,13 +149,13 @@ const { title, resenas = [] } = Astro.props;
         ],
         "priceRange": "$$$",
         "openingHours": "Mo-Fr 09:00-20:00",
-        "image": "https://www.xn--apuralea-j3a.com.ar/og-image.png",
+        "image": "https://apuraleña.com.ar/og-image.png",
         "sameAs": [
           "https://www.instagram.com/a_pura_lena/",
           "https://www.facebook.com/profile.php?id=61561940952103",
           "https://www.youtube.com/@apuraleña"
         ],
-        "hasMenu": "https://www.xn--apuralea-j3a.com.ar/presupuesto",
+        "hasMenu": "https://apuraleña.com.ar/presupuesto",
         "servesCuisine": "Argentinian",
         "acceptsReservations": "True"
       }
@@ -205,8 +217,8 @@ const { title, resenas = [] } = Astro.props;
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-          {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.xn--apuralea-j3a.com.ar/"},
-          {"@type": "ListItem", "position": 2, "name": "Presupuesto", "item": "https://www.xn--apuralea-j3a.com.ar/presupuesto"}
+          {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://apuraleña.com.ar/"},
+          {"@type": "ListItem", "position": 2, "name": "Presupuesto", "item": "https://apuraleña.com.ar/presupuesto"}
         ]
       }
     </script>

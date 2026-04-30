@@ -19,8 +19,6 @@ export default function HamburgerMenu() {
     };
     
     checkMobile();
-    // Debug logging
-    console.log('Hamburger mounted, width:', window.innerWidth);
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);

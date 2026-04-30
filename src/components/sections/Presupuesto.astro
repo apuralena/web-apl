@@ -1,6 +1,6 @@
 ---
 import Section from "../Section.astro";
-import { FormPresupuesto } from "../Form.jsx";
+import { FormPresupuesto } from "../Form";
 import { sanityClient } from "sanity:client";
 
 const formConfig = await sanityClient.fetch(`*[_type == "formulario"][0]`);

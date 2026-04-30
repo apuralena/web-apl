@@ -1,29 +1,68 @@
 import type { APIRoute } from "astro";
 import { Resend } from "resend";
+import { z } from "zod";
+
+const primitiveValueSchema = z.union([z.string(), z.number(), z.boolean()]);
+
+const presupuestoSchema = z.record(
+  z.string(),
+  z.union([primitiveValueSchema, z.array(primitiveValueSchema)]),
+);
+
+type PresupuestoData = z.infer<typeof presupuestoSchema>;
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatPlainValue(value: unknown, fallback: string): string {
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    const plainValue = String(value).replace(/[\r\n]+/g, " ").trim();
+    return plainValue ? plainValue.slice(0, 120) : fallback;
+  }
+
+  return fallback;
+}
 
 function formatValue(key: string, value: unknown): string {
   if (Array.isArray(value)) {
-    return value.length > 0 ? value.join(", ") : "—";
+    return value.length > 0
+      ? value.map((item) => escapeHtml(String(item))).join(", ")
+      : "—";
   }
-  if (typeof value === "string" && value.trim() !== "") {
-    return value;
+  if (
+    (typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean") &&
+    String(value).trim() !== ""
+  ) {
+    return escapeHtml(String(value));
   }
   return "—";
 }
 
-function buildEmailHtml(data: Record<string, string | string[]>): string {
+function buildEmailHtml(data: PresupuestoData): string {
   const rows = Object.entries(data)
     .filter(([key]) => !key.endsWith("_otro"))
     .map(([key, value]) => {
       const otroKey = `${key}_otro`;
       let displayValue = formatValue(key, value);
       if (value === "otro" && otroKey in data) {
-        displayValue = `Otro: ${data[otroKey]}`;
+        displayValue = `Otro: ${formatValue(otroKey, data[otroKey])}`;
       }
       const label = key
         .replace(/([A-Z])/g, " $1")
         .replace(/^./, (s) => s.toUpperCase());
-      return `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#333;vertical-align:top;white-space:nowrap">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#555">${displayValue}</td></tr>`;
+      return `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#333;vertical-align:top;white-space:nowrap">${escapeHtml(label)}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#555">${displayValue}</td></tr>`;
     })
     .join("");
 
@@ -45,7 +84,16 @@ function buildEmailHtml(data: Record<string, string | string[]>): string {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const data = await request.json();
+    const parsed = presupuestoSchema.safeParse(await request.json());
+
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({ error: "Datos de presupuesto inválidos" }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    const data = parsed.data;
 
     const apiKey = import.meta.env.RESEND_API_KEY;
     if (!apiKey) {
@@ -65,8 +113,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const nombre = data.nombre || "Sin nombre";
-    const tipoEvento = data.tipoEvento || "Evento";
+    const nombre = formatPlainValue(data.nombre, "Sin nombre");
+    const tipoEvento = formatPlainValue(data.tipoEvento, "Evento");
 
     const { error } = await resend.emails.send({
       from: "A Pura Leña <onboarding@resend.dev>",

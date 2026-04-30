@@ -10,8 +10,8 @@
   
   body {
     font-family: 'Inter', sans-serif;
-    background-color: transparent;
-    color: #fff;
+    background-color: var(--background);
+    color: var(--foreground);
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
@@ -30,7 +30,8 @@
 
   * {
     box-sizing: border-box;
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
   }
 
   /* Scrollbar minimalista */
@@ -103,15 +104,6 @@
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.65 0.18 40);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
 
 @theme inline {
