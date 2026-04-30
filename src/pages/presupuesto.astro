@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import Section from '../components/Section.astro'
-import { FormPresupuesto } from '../components/Form.jsx'
+import { FormPresupuesto } from '../components/Form'
 import { sanityClient } from 'sanity:client'
 
 const formConfig = await sanityClient.fetch(`*[_type == "formulario"][0]`)

@@ -19,6 +19,13 @@ export default defineConfig({
       changefreq: 'weekly',
       priority: 0.8,
       lastmod: new Date(),
+      filter: (page) => {
+        const { pathname } = new URL(page)
+
+        return !['/admin', '/api', '/sendnewsletter'].some((path) =>
+          pathname.startsWith(path),
+        )
+      },
       customPages: [
         'https://apuraleña.com.ar/eventos/eventos-sociales',
         'https://apuraleña.com.ar/eventos/casamientos',

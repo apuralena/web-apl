@@ -1,10 +1,33 @@
 import type { APIRoute } from "astro";
+import { z } from "zod";
+
+const sendNewsletterSchema = z.object({
+  password: z.string().min(1),
+  subject: z.string().trim().min(1, "El asunto es requerido").max(160),
+  htmlContent: z.string().trim().min(1, "El contenido es requerido").max(100_000),
+});
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { password, subject, htmlContent } = await request.json();
+    const parsed = sendNewsletterSchema.safeParse(await request.json());
+
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({ error: "Faltan datos requeridos" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const { password, subject, htmlContent } = parsed.data;
 
     const expectedPassword = import.meta.env.NEWSLETTER_PASSWORD;
+    if (!expectedPassword) {
+      return new Response(
+        JSON.stringify({ error: "Configuración incompleta" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     if (password !== expectedPassword) {
       return new Response(
         JSON.stringify({ error: "Contraseña incorrecta" }),
@@ -12,19 +35,12 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (!subject || !htmlContent) {
-      return new Response(
-        JSON.stringify({ error: "Faltan datos requeridos" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
     const apiKey = import.meta.env.BREVO_API_KEY;
     const senderEmail = import.meta.env.BREVO_SENDER_EMAIL;
     const senderName = import.meta.env.BREVO_SENDER_NAME;
-    const listId = import.meta.env.BREVO_LIST_ID || 3;
+    const listId = Number(import.meta.env.BREVO_LIST_ID || 3);
 
-    if (!apiKey || !senderEmail || !senderName) {
+    if (!apiKey || !senderEmail || !senderName || !Number.isInteger(listId)) {
       return new Response(
         JSON.stringify({ error: "Configuración incompleta" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
@@ -38,7 +54,6 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
     const data = await contactsRes.json();
-    console.log("Brevo response:", JSON.stringify(data));
 
     if (!contactsRes.ok) {
       return new Response(
@@ -49,9 +64,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     const contacts = data.contacts || [];
     const emails = contacts.map((c: { email: string }) => c.email).filter(Boolean);
-
-    console.log("Contactos encontrados:", contacts.length);
-    console.log("Emails:", emails);
 
     if (emails.length === 0) {
       return new Response(
@@ -83,7 +95,6 @@ export const POST: APIRoute = async ({ request }) => {
       });
 
       const sendData = await sendRes.json();
-      console.log("Send response:", JSON.stringify(sendData));
 
       if (!sendRes.ok) {
         return new Response(

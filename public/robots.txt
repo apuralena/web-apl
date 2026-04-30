@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /sendnewsletter
 
 Sitemap: https://apuraleña.com.ar/sitemap-index.xml

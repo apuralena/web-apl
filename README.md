@@ -74,10 +74,21 @@ npm run dev
 
 ## Variables de entorno
 
-Crear un archivo `.env` con las siguientes variables:
+Crear un archivo `.env` con las siguientes variables. Podés copiar `.env.example` como base:
 
 ```env
+# Presupuestos por email
 RESEND_API_KEY=tu_api_key_de_resend
+EMAIL_DESTINO=consultas@tu-dominio.com
+
+# Newsletter con Brevo
+BREVO_API_KEY=tu_api_key_de_brevo
+BREVO_SENDER_EMAIL=newsletter@tu-dominio.com
+BREVO_SENDER_NAME="A Pura Leña"
+BREVO_LIST_ID=3
+
+# Panel simple de envío de newsletter
+NEWSLETTER_PASSWORD=una_contraseña_segura
 ```
 
 ---

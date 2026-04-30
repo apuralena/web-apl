@@ -1,21 +1,29 @@
 import type { APIRoute } from "astro";
+import { z } from "zod";
+
+const subscribeSchema = z.object({
+  email: z.string().trim().email("Email inválido").toLowerCase(),
+});
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { email } = await request.json();
+    const parsed = subscribeSchema.safeParse(await request.json());
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!parsed.success) {
       return new Response(
         JSON.stringify({ error: "Email inválido" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
+    const { email } = parsed.data;
+
     const apiKey = import.meta.env.BREVO_API_KEY;
     const senderEmail = import.meta.env.BREVO_SENDER_EMAIL;
     const senderName = import.meta.env.BREVO_SENDER_NAME;
+    const listId = Number(import.meta.env.BREVO_LIST_ID || 3);
 
-    if (!apiKey || !senderEmail || !senderName) {
+    if (!apiKey || !senderEmail || !senderName || !Number.isInteger(listId)) {
       return new Response(
         JSON.stringify({ error: "Configuración de Brevo incompleta" }),
         { status: 500, headers: { "Content-Type": "application/json" } }
@@ -33,7 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
         attributes: {
           NEWSLETTER: true,
         },
-        listIds: [3],
+        listIds: [listId],
         updateEnabled: true,
       }),
     });
