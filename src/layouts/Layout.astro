@@ -4,7 +4,6 @@ import Footer from "../components/Footer";
 import Header from "../components/Header.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
 import { StickyBanner } from "@/components/ui/sticky-banner";
-import { AuroraBackground } from "../components/ui/aurora-background";
 import { Toaster } from "sonner";
 import "../styles/global.css";
 interface Props {
@@ -228,9 +227,24 @@ const ogImageUrl = `${siteUrl}/og-image.png`;
     <!-- Skip to content link -->
     <a href='#main-content' class='skip-link'>Saltar al contenido</a>
     
-    <!-- Aurora visible -->
-    <div class='aurora-wrapper'>
-      <AuroraBackground client:idle />
+    <div
+      class='site-background'
+      aria-hidden='true'
+      transition:name='site-background'
+      transition:persist
+    >
+      <video
+        class='site-background-video'
+        autoplay
+        muted
+        loop
+        playsinline
+        preload='auto'
+        tabindex='-1'
+      >
+        <source src='/background.mp4' type='video/mp4' />
+      </video>
+      <div class='site-background-overlay'></div>
     </div>
     
     <div class='content-wrapper' style='position: relative'>
@@ -287,13 +301,53 @@ const ogImageUrl = `${siteUrl}/og-image.png`;
     min-height: 100vh;
   }
 
-  .aurora-wrapper {
+  .site-background {
     position: fixed;
     inset: 0;
-    height: 100vh;
+    height: 100svh;
     width: 100%;
     z-index: 0;
     pointer-events: none;
+    overflow: hidden;
+    background: #09090b;
+  }
+
+  .site-background-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    filter: saturate(0.96) contrast(1.05) brightness(0.78);
+    transform: scale(1.01);
+  }
+
+  .site-background-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(9, 9, 11, 0.72) 0%, rgba(9, 9, 11, 0.44) 46%, rgba(9, 9, 11, 0.62) 100%),
+      linear-gradient(180deg, rgba(9, 9, 11, 0.48) 0%, rgba(9, 9, 11, 0.16) 38%, rgba(9, 9, 11, 0.7) 100%);
+  }
+
+  @media (max-width: 767px) {
+    .site-background-video {
+      object-position: 58% center;
+      filter: saturate(0.92) contrast(1.04) brightness(0.72);
+    }
+
+    .site-background-overlay {
+      background:
+        linear-gradient(180deg, rgba(9, 9, 11, 0.66) 0%, rgba(9, 9, 11, 0.28) 44%, rgba(9, 9, 11, 0.76) 100%),
+        linear-gradient(90deg, rgba(9, 9, 11, 0.5), rgba(9, 9, 11, 0.42));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-background-video {
+      display: none;
+    }
   }
 
   .content-wrapper {
